@@ -1,0 +1,3 @@
+renderInit = function(session){
+  
+}
