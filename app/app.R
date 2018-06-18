@@ -50,7 +50,14 @@ ui <- navbarPage(
   tabPanel("About", value = "about",
            "Basic demo of supporting navigation in a Shiny app by",
            tags$a("Dean Attali", href = "http://deanattali.com")
-  )
+  ),
+  
+  # javascript embedded.
+  tags$script("
+    Shiny.addCustomMessageHandler('resetValue', function(variableName) {
+              Shiny.onInputChange(variableName, null);
+              });
+              ")
 )    
 
 # Define server logic
