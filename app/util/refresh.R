@@ -1,4 +1,4 @@
-renderInit = function(session){
+refreshAll = function(session){
   # javascript used to reset the input value to avoid the input value 
   # could not be destroyed even after ui removed.
   session$sendCustomMessage(type = "resetValue", message = "header")
@@ -8,7 +8,7 @@ renderInit = function(session){
   session$sendCustomMessage(type = "resetValue", message = "time_unit")
 }
 
-refreshPlaceHolder <- function(session){
+refreshQA <- function(session){
   # refresh the placeholder if restart is clicked.
   # used only for shinny server.
   # session: shinny session.
@@ -17,7 +17,4 @@ refreshPlaceHolder <- function(session){
   insertUI(selector = "#start",where = "beforeBegin",
            ui = tags$div(id = "uiInput",tags$div(id = "placeholder")),
            immediate = TRUE)
-  
-  
-  
 }
