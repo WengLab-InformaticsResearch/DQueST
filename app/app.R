@@ -24,7 +24,7 @@ ui <- navbarPage(
     "Search",
     value = "search",
     h2("You can search by condition and demographics"),
-    textInput(
+    wellPanel(textInput(
       inputId = "keyword",
       label = "Enter string to search",
       value = NULL,
@@ -44,7 +44,7 @@ ui <- navbarPage(
       inline = TRUE,
       choiceNames = c("Male", "Female"),
       choiceValues = c("Male", "Female")
-    ),
+    )),
     actionButton(inputId = "search", label = "Search"),
     actionButton(inputId = "restart", label = "Restart")
     
@@ -58,15 +58,16 @@ ui <- navbarPage(
       text = "Continue",
       label = "Continue"
     ),
-    DTOutput(outputId = "trial_info")
+    wellPanel(DTOutput(outputId = "trial_info"))
   ),
   tabPanel(
     "QA",
     value = "qa",
     h2("You can search by answering the questions"),
-    fluidRow(column(12, tags$div(
+    wellPanel(fluidRow(column(12, tags$div(
       id = "uiInput", tags$div(id = "placeholder")
-    ))),
+    )))),
+    checkboxInput(inputId = "speed", label = "Fast Filtering", value = TRUE),
     actionButton(inputId = "submit", label = "Submit"),
     actionButton(inputId = "skip", label = "Skip")
     
@@ -125,6 +126,7 @@ server <- function(input, output, session) {
                            idx = react$common_concept_id)
     output$trial_info = renderTrialInfo(react$wMatrix, session)
     renderQuestion(question, session)
+    
     # go to the search tab when clicking the button
     updateTabsetPanel(session, inputId = "navbar", selected = "qa")
   })
@@ -138,7 +140,8 @@ server <- function(input, output, session) {
     react$wMatrix = updateWMatrix(
       wMatrix = react$wMatrix,
       common_concept_id = react$common_concept_id,
-      answer = answer
+      answer = answer,
+      speed = input$speed
     )
     output$trial_info = renderTrialInfo(react$wMatrix, session)
     # restart the value.

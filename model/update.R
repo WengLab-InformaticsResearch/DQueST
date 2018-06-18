@@ -70,36 +70,20 @@ removeTrialsDemo = function(relatedTrialsWMatrix, answer, speed) {
 removeTrial = function(relatedTrialsWMatrixAdd, speed) {
   if (speed == TRUE) {
     trialRemoved1 = relatedTrialsWMatrixAdd %>%
-      filter(match == TRUE &
-               omop_id == common_omop_id & ie_flag == 0)
-    
+      filter(match == TRUE & ie_flag == 0)
     trialRemoved2 = relatedTrialsWMatrixAdd %>%
-      filter(match == TRUE &
-               omop_id != common_omop_id & ie_flag == 0)
-    trialRemoved3 = relatedTrialsWMatrixAdd %>%
-      filter(match == FALSE &
-               omop_id == common_omop_id & ie_flag == 1)
-    trialRemoved4 = relatedTrialsWMatrixAdd %>%
-      filter(match == FALSE &
-               omop_id != common_omop_id & ie_flag == 1)
+      filter(match == FALSE & ie_flag == 1)
     trialRemoved = trialRemoved1 %>%
       bind_rows(trialRemoved2) %>%
-      bind_rows(trialRemoved3) %>%
-      bind_rows(trialRemoved4) %>%
       pull(nct_id) %>% unique()
   } else{
     trialRemoved1 = relatedTrialsWMatrixAdd %>%
       filter(match == TRUE &
-               omop_id == common_omop_id & ie_flag == 0)
-    trialRemoved3 = relatedTrialsWMatrixAdd %>%
-      filter(match == FALSE &
-               omop_id == common_omop_id & ie_flag == 1)
-    trialRemoved4 = relatedTrialsWMatrixAdd %>%
-      filter(match == FALSE &
-               omop_id != common_omop_id & ie_flag == 1)
+               omop_id == common_omop_id & mapping_score > 0.8 & ie_flag == 0)
+    trialRemoved2 = relatedTrialsWMatrixAdd %>%
+      filter(match == FALSE & mapping_score > 0.8 & ie_flag == 1)
     trialRemoved = trialRemoved1 %>%
-      bind_rows(trialRemoved3) %>%
-      bind_rows(trialRemoved4) %>%
+      bind_rows(trialRemoved2) %>%
       pull(nct_id) %>% unique()
   }
   return(trialRemoved)

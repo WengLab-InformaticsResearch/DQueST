@@ -5,7 +5,7 @@ findConcept = function(wMatrix){
   # randomly pick a concept_id
   idx = wMatrix %>% pull(common_omop_id) %>% unique() %>% sample(size = 1)
   # for test only.
-  idx = 4344899
+  idx = 4344898
   tryCatch(expr = {1},
            error = function(e) e,
            finally = print("find best concept"))
