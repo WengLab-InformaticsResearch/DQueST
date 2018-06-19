@@ -53,12 +53,12 @@ ui <- navbarPage(
     "Trials",
     value = "trials",
     h2("Search results:"),
+    wellPanel(DTOutput(outputId = "trial_info")),
     actionButton(
       inputId = "continue",
       text = "Continue",
       label = "Continue"
-    ),
-    wellPanel(DTOutput(outputId = "trial_info"))
+    )
   ),
   tabPanel(
     "QA",
@@ -98,17 +98,21 @@ server <- function(input, output, session) {
   observeEvent(input$search, {
     req(input$keyword, input$age, input$gender, react$wMatrix)
     # search items.
-    query = formQuery(input, session)
-    react$wMatrix = searchByAll(
-      wMatrix = react$wMatrix,
-      gender = query$gender,
-      age = query$age,
-      term = query$term
-    )
-    # restart the value.
-    output$trial_info = renderTrialInfo(react$wMatrix, session)
-    # go to the trial tab when clicking the button
-    updateTabsetPanel(session, inputId = "navbar", selected = "trials")
+    if(dim(react$wMatrix)[1] > 0) {
+      query = formQuery(input, session)
+      react$wMatrix = searchByAll(
+        wMatrix = react$wMatrix,
+        gender = query$gender,
+        age = query$age,
+        term = query$term
+      )
+      # restart the value.
+      output$trial_info = renderTrialInfo(react$wMatrix, session)
+      # go to the trial tab when clicking the button
+      updateTabsetPanel(session, inputId = "navbar", selected = "trials")
+    } else{
+      showNotification("All trials have been filtered out.")
+    }
   })
   
   # event restart button
@@ -119,51 +123,64 @@ server <- function(input, output, session) {
   # event continue button
   observeEvent(input$continue, {
     req(react$wMatrix)
-    # optimize.
-    react$common_concept_id = findConcept(wMatrix = react$wMatrix)
-    # render the question.
-    question = questionGet(wMatrix = react$wMatrix,
-                           idx = react$common_concept_id)
-    output$trial_info = renderTrialInfo(react$wMatrix, session)
-    renderQuestion(question, session)
+    if(dim(react$wMatrix)[1] > 0){
+      # optimize.
+      react$common_concept_id = findConcept(wMatrix = react$wMatrix)
+      # render the question.
+      question = questionGet(wMatrix = react$wMatrix,
+                             idx = react$common_concept_id)
+      output$trial_info = renderTrialInfo(react$wMatrix, session)
+      renderQuestion(question, session)
+      
+      # go to the search tab when clicking the button
+      updateTabsetPanel(session, inputId = "navbar", selected = "qa")
+    } else{
+      showNotification("All trials have been filtered out.")
+    }
     
-    # go to the search tab when clicking the button
-    updateTabsetPanel(session, inputId = "navbar", selected = "qa")
   })
   
   # event submit button
   observeEvent(input$submit, {
     req(react$wMatrix, react$common_concept_id)
-    # standardize the answer.
-    answer = formAnswer(input, session)
-    # update the wMatrix.
-    react$wMatrix = updateWMatrix(
-      wMatrix = react$wMatrix,
-      common_concept_id = react$common_concept_id,
-      answer = answer,
-      speed = input$speed
-    )
-    output$trial_info = renderTrialInfo(react$wMatrix, session)
-    # restart the value.
-    # refreshQA(session)
-    # go to the trial tab when clicking the button
-    updateTabsetPanel(session, inputId = "navbar", selected = "trials")
+    if(dim(react$wMatrix)[1] > 0) {
+      # standardize the answer.
+      answer = formAnswer(input, session)
+      # update the wMatrix.
+      react$wMatrix = updateWMatrix(
+        wMatrix = react$wMatrix,
+        common_concept_id = react$common_concept_id,
+        answer = answer,
+        speed = input$speed
+      )
+      output$trial_info = renderTrialInfo(react$wMatrix, session)
+      # restart the value.
+      # refreshQA(session)
+      # go to the trial tab when clicking the button
+      updateTabsetPanel(session, inputId = "navbar", selected = "trials")
+    } else{
+      showNotification("All trials have been filtered out.")
+    }
   })
   
   # event skip button
   observeEvent(input$skip, {
     req(react$wMatrix, react$common_concept_id)
-    # update the wMatrix.
-    react$wMtrix = updateWMatrix(
-      wMatrix = react$wMatrix,
-      common_concept_id = common_concept_id,
-      answer = NULL
-    )
-    output$trial_info = renderTrialInfo(react$wMatrix, session)
-    # restart the value.
-    # refreshQA(session)
-    # go to the trial tab when clicking the button
-    updateTabsetPanel(session, inputId = "navbar", selected = "trials")
+    if(dim(react$wMatrix)[1] > 0) {
+      # update the wMatrix.
+      react$wMtrix = updateWMatrix(
+        wMatrix = react$wMatrix,
+        common_concept_id = react$common_concept_id,
+        answer = NULL
+      )
+      output$trial_info = renderTrialInfo(react$wMatrix, session)
+      # restart the value.
+      # refreshQA(session)
+      # go to the trial tab when clicking the button
+      updateTabsetPanel(session, inputId = "navbar", selected = "trials")
+    } else{
+      showNotification("All trials have been filtered out.")
+    }
   })
   
 }

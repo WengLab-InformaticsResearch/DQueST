@@ -24,7 +24,7 @@ questionGetDomain = function(subWMatrix,domain){
 }
 
 questionGetDemo = function(subWMatrix){
-  quesion = NULL
+  question = NULL
   question$domain = "demographic"
   question$name = subWMatrix %>% pull(common_omop_name) %>% unique()
   question$s = paste("What is your ",question$name)
