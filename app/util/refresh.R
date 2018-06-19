@@ -1,11 +1,19 @@
 refreshAll = function(session){
   # javascript used to reset the input value to avoid the input value 
   # could not be destroyed even after ui removed.
-  session$sendCustomMessage(type = "resetValue", message = "header")
-  session$sendCustomMessage(type = "resetValue", message = "time")
-  session$sendCustomMessage(type = "resetValue", message = "status")
+  
+  session$sendCustomMessage(type = "resetValue", message = "keyword")
+  session$sendCustomMessage(type = "resetValue", message = "age")
+  session$sendCustomMessage(type = "resetValue", message = "gender")
   session$sendCustomMessage(type = "resetValue", message = "value")
+  session$sendCustomMessage(type = "resetValue", message = "time")
   session$sendCustomMessage(type = "resetValue", message = "time_unit")
+  session$sendCustomMessage(type = "resetValue", message = "radio")
+  session$sendCustomMessage(type = "resetValue", message = "status")
+
+  react$wMatrix = wMatrix
+  react$common_concept_id = NULL
+  output$trial_info = renderTrialInfo(NULL, session)
 }
 
 refreshQA <- function(session){
@@ -13,8 +21,17 @@ refreshQA <- function(session){
   # used only for shinny server.
   # session: shinny session.
   # cat("Refresh PlaceHolder\n")
-  removeUI(selector = "div#uiInput",immediate = TRUE)
-  insertUI(selector = "#start",where = "beforeBegin",
-           ui = tags$div(id = "uiInput",tags$div(id = "placeholder")),
+  session$sendCustomMessage(type = "resetValue", message = "keyword")
+  session$sendCustomMessage(type = "resetValue", message = "age")
+  session$sendCustomMessage(type = "resetValue", message = "gender")
+  session$sendCustomMessage(type = "resetValue", message = "value")
+  session$sendCustomMessage(type = "resetValue", message = "time")
+  session$sendCustomMessage(type = "resetValue", message = "time_unit")
+  session$sendCustomMessage(type = "resetValue", message = "radio")
+  session$sendCustomMessage(type = "resetValue", message = "status")
+
+  removeUI(selector = "div#uiInput1",immediate = TRUE)
+  insertUI(selector = "div#uiInput2",where = "beforeBegin",
+           ui = tags$div(id = "uiInput1",tags$div(id = "placeholder1")),
            immediate = TRUE)
 }

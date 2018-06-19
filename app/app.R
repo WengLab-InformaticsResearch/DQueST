@@ -1,5 +1,6 @@
 library(shiny)
 library(shinyjs)
+library(shinyBS)
 source("../model/search.R")
 source("../model/optimize.R")
 source("../model/init.R")
@@ -10,6 +11,9 @@ source("util/formQuery.R")
 source("util/refresh.R")
 source("util/renderQuestion.R")
 source("util/renderTrialInfo.R")
+# source("util/buttonHelper.R")
+# source("util/SwitchButton.R")
+
 
 wMatrix = initByCsv(File = "../resource/mock_w_matrix.csv") # for test only.
 ui <- navbarPage(
@@ -17,7 +21,7 @@ ui <- navbarPage(
   id = "navbar",
   header = tagList(
     useShinyjs(),
-    extendShinyjs("www/app-shinyjs.js", functions = c("updateHistory"))
+    extendShinyjs("www/js/app-shinyjs.js", functions = c("updateHistory"))
   ),
   
   tabPanel(
@@ -45,32 +49,25 @@ ui <- navbarPage(
       choiceNames = c("Male", "Female"),
       choiceValues = c("Male", "Female")
     )),
-    actionButton(inputId = "search", label = "Search"),
-    actionButton(inputId = "restart", label = "Restart")
+    actionButton(inputId = "search", label = "Search",class = "btn-primary"),
+    actionButton(inputId = "restart", label = "Restart",class = "btn-secondary")
     
   ),
   tabPanel(
     "Trials",
     value = "trials",
-    h2("Search results:"),
+    h4("Search results:"),
     wellPanel(DTOutput(outputId = "trial_info")),
+    h4("You can search by answering the questions"),
+    wellPanel(fluidRow(column(12, tags$div(id = "uiInput1", tags$div(id = "placeholder1")))),
+              fluidRow(column(12, tags$div(id = "uiInput2", tags$div(id = "placeholder2"))))),
+    checkboxInput(inputId = "speed", label = "Fast Filtering", value = TRUE),
+    # actionButton(inputId = "skip", label = "Skip", class = "btn-danger"),
     actionButton(
       inputId = "continue",
-      text = "Continue",
-      label = "Continue"
+      label = "Continue",
+      class = "btn-info"
     )
-  ),
-  tabPanel(
-    "QA",
-    value = "qa",
-    h2("You can search by answering the questions"),
-    wellPanel(fluidRow(column(12, tags$div(
-      id = "uiInput", tags$div(id = "placeholder")
-    )))),
-    checkboxInput(inputId = "speed", label = "Fast Filtering", value = TRUE),
-    actionButton(inputId = "submit", label = "Submit"),
-    actionButton(inputId = "skip", label = "Skip")
-    
   ),
   tabPanel(
     "About",
@@ -80,19 +77,23 @@ ui <- navbarPage(
   ),
   
   # javascript embedded.
-  tags$script(
-    "
-    Shiny.addCustomMessageHandler('resetValue', function(variableName) {
-    Shiny.onInputChange(variableName, null);
-    });
-    "
-  )
+  tags$head(tags$script(src="js/app.js")),
+  # tags$script(
+  #   "
+  #   Shiny.addCustomMessageHandler('resetValue', function(variableName) {
+  #   Shiny.onInputChange(variableName, null);
+  #   });
+  #   "
+  # )
+  # add toolTip
+  bsTooltip(id = "continue", title = "Start question or continue to next question", 
+            placement = "right", trigger = "hover")
 )
 
 # Define server logic
 server <- function(input, output, session) {
   # init global var.
-  react <- reactiveValues(wMatrix = wMatrix)
+  react <- reactiveValues(wMatrix = wMatrix, wMatrix_tmp = wMatrix, common_concept_id = NULL)
   
   # event search button
   observeEvent(input$search, {
@@ -107,7 +108,8 @@ server <- function(input, output, session) {
         term = query$term
       )
       # restart the value.
-      output$trial_info = renderTrialInfo(react$wMatrix, session)
+      react$wMatrix_tmp = react$wMatrix
+      output$trial_info = renderTrialInfo(react$wMatrix_tmp, session)
       # go to the trial tab when clicking the button
       updateTabsetPanel(session, inputId = "navbar", selected = "trials")
     } else{
@@ -122,18 +124,19 @@ server <- function(input, output, session) {
   
   # event continue button
   observeEvent(input$continue, {
-    req(react$wMatrix)
-    if(dim(react$wMatrix)[1] > 0){
+    req(react$wMatrix_tmp)
+    if(dim(react$wMatrix_tmp)[1] > 0){
+      react$wMatrix = react$wMatrix_tmp
+      output$trial_info = renderTrialInfo(react$wMatrix, session)
       # optimize.
       react$common_concept_id = findConcept(wMatrix = react$wMatrix)
       # render the question.
       question = questionGet(wMatrix = react$wMatrix,
                              idx = react$common_concept_id)
-      output$trial_info = renderTrialInfo(react$wMatrix, session)
+      refreshQA(session)
       renderQuestion(question, session)
-      
       # go to the search tab when clicking the button
-      updateTabsetPanel(session, inputId = "navbar", selected = "qa")
+      # updateTabsetPanel(session, inputId = "navbar", selected = "qa")
     } else{
       showNotification("All trials have been filtered out.")
     }
@@ -143,45 +146,49 @@ server <- function(input, output, session) {
   # event submit button
   observeEvent(input$submit, {
     req(react$wMatrix, react$common_concept_id)
-    if(dim(react$wMatrix)[1] > 0) {
-      # standardize the answer.
-      answer = formAnswer(input, session)
-      # update the wMatrix.
-      react$wMatrix = updateWMatrix(
+    if (dim(react$wMatrix)[1] > 0) {
+      if (input$skip == TRUE) {
+        showNotification("You have selected skip the question.")
+        answer = NULL
+      } else{
+        # standardize the answer.
+        answer = formAnswer(input, session)
+      }
+      # update the wMatrix_tmp.
+      react$wMatrix_tmp = updateWMatrix(
         wMatrix = react$wMatrix,
         common_concept_id = react$common_concept_id,
         answer = answer,
         speed = input$speed
       )
-      output$trial_info = renderTrialInfo(react$wMatrix, session)
-      # restart the value.
-      # refreshQA(session)
+      output$trial_info = renderTrialInfo(react$wMatrix_tmp, session)
       # go to the trial tab when clicking the button
-      updateTabsetPanel(session, inputId = "navbar", selected = "trials")
+      # updateTabsetPanel(session, inputId = "navbar", selected = "trials")
     } else{
       showNotification("All trials have been filtered out.")
     }
   })
   
   # event skip button
-  observeEvent(input$skip, {
-    req(react$wMatrix, react$common_concept_id)
-    if(dim(react$wMatrix)[1] > 0) {
-      # update the wMatrix.
-      react$wMtrix = updateWMatrix(
-        wMatrix = react$wMatrix,
-        common_concept_id = react$common_concept_id,
-        answer = NULL
-      )
-      output$trial_info = renderTrialInfo(react$wMatrix, session)
-      # restart the value.
-      # refreshQA(session)
-      # go to the trial tab when clicking the button
-      updateTabsetPanel(session, inputId = "navbar", selected = "trials")
-    } else{
-      showNotification("All trials have been filtered out.")
-    }
-  })
+  # observeEvent(input$skip, {
+  #   req(react$wMatrix, react$common_concept_id)
+  #   if(dim(react$wMatrix)[1] > 0) {
+  #     # update the wMatrix.
+  #     react$wMatrix = updateWMatrix(
+  #       wMatrix = react$wMatrix,
+  #       common_concept_id = react$common_concept_id,
+  #       answer = NULL
+  #     )
+  #     output$trial_info = renderTrialInfo(react$wMatrix, session)
+  #     
+  #     # restart the value.
+  #     refreshQA(session)
+  #     # go to the trial tab when clicking the button
+  #     # updateTabsetPanel(session, inputId = "navbar", selected = "trials")
+  #   } else{
+  #     showNotification("All trials have been filtered out.")
+  #   }
+  # })
   
 }
 

@@ -1,6 +1,30 @@
 renderQuestion = function(question,session){
   domain = question$domain
   renderQuestionDomain(question,domain)
+  insertUI(
+    selector = "#placeholder1",
+    where = "beforeBegin",
+    checkboxInput(inputId = "skip",
+                  label = "skip this question"),
+    immediate = TRUE
+  )
+  insertUI(
+    selector = "#placeholder1",
+    where = "beforeBegin",
+    actionButton(
+      inputId = "submit",
+      label = "Update",
+      class = "btn-success"
+    ),
+    immediate = TRUE
+  )
+  addTooltip(
+    session,
+    id = "submit",
+    title = "Update the above trial list",
+    placement = "right",
+    trigger = "hover"
+  )
   return(NULL)
 }
 
@@ -80,7 +104,7 @@ renderQuestionObservation = function(question) {
 
 insertRatioButtons <- function(label, choices) {
   insertUI(
-    selector = "#placeholder",
+    selector = "#placeholder1",
     where = "beforeBegin",
     radioButtons(
       inputId = "radio",
@@ -94,7 +118,7 @@ insertRatioButtons <- function(label, choices) {
 
 insertCheckboxGroupInput = function(label, choices) {
   insertUI(
-    selector = "#placeholder",
+    selector = "#placeholder1",
     where = "beforeBegin",
     checkboxGroupInput(
       inputId = "checkbox",
@@ -108,7 +132,7 @@ insertCheckboxGroupInput = function(label, choices) {
 
 insertNumericInput <- function(label) {
   insertUI(
-    selector = "#placeholder",
+    selector = "#placeholder1",
     where = "beforeBegin",
     numericInput(
       inputId = "value",
@@ -122,7 +146,7 @@ insertNumericInput <- function(label) {
 
 insertTimeInput = function(label) {
   insertUI(
-    selector = "#placeholder",
+    selector = "#placeholder1",
     where = "beforeBegin",
     tags$div(tags$label(label),
              fluidRow(
