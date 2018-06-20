@@ -62,11 +62,14 @@ formatDt = function(dt) {
 
 checkFormat = function(dt){
   # check colnames.
+  if(dim(dt)[2] != 16){
+    stop("colname is not compatible.")
+  }
   if(sum(colnames(dt) == c("id","nct_id","term","ie_flag",
                        "domain","value_min","value_max",
                        "status","temporal_min","temporal_max",
                        "omop_id","omop_name","mapping_score",
-                       "common_omop_id","common_omop_name")) != 15){
+                       "common_omop_id","common_omop_name","cofreq")) != 16){
     stop("colname is not compatible.")
   }
   if(dim(dt)[1] < 5){

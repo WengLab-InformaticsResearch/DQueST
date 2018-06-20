@@ -1,31 +1,31 @@
-id,nct_id,term,ie_flag,domain,value_min,value_max,status,temporal_min,temporal_max,omop_id,omop_name,mapping_score,common_omop_id,common_omop_name
-1,NCT03414684,breast cancer,1,condition,,,,,Inf,4344883,breast cancer,0.9,4344883,breast cancer
-22,NCT03289039,breast cancer,1,condition,,,,,,4344883,breast cancer,0.75,4344883,breast cancer
-29,NCT03483012,breast cancer,1,condition,1,,,,,4344883,breast cancer,0.8,4344883,breast cancer
-2,NCT03414684,age,1,demographic,18,Inf,,,,4344884,age,1,4344884,age
-23,NCT03289039,age,1,demographic,50,Inf,NA,,,4344884,age,0.9,4344884,age
-30,NCT03483012,age,1,demographic,18,80,NA,NA,,4344884,age,0.8,4344884,age
-3,NCT03414684,postmenopausal,1,condition,,,,,,4344885,postmenopausal,0.8,4344885,postmenopausal
-4,NCT03414684,Hemoglobin,1,measurement,9,Inf,,,,4344886,Hemoglobin,0.8,4344886,Hemoglobin
-20,NCT03289039,Hemoglobin,1,measurement,9,Inf,,,,4344886,Hemoglobin,0.8,4344886,Hemoglobin
-27,NCT03483012,Hemoglobin,1,measurement,5,Inf,,,,4344886,Hemoglobin,1,4344886,Hemoglobin
-5,NCT03414684,Platelets,1,measurement,100000,Inf,,,,4344887,Platelets,0.75,4344887,Platelets
-21,NCT03289039,Platelets,1,measurement,100000,,,,,4344887,Platelets,0.8,4344887,Platelets
-28,NCT03483012,Platelets,1,measurement,80000,Inf,,,,4344887,Platelets,0.8,4344887,Platelets
-6,NCT03414684,Absolute neutrophil count,1,measurement,1500,Inf,,,,4344888,Absolute neutrophil count,0.9,4344888,Absolute neutrophil count
-7,NCT03414684,gender,1,demographic,,,female,,,4344889,gender,0.9,4344889,gender
-24,NCT03289039,gender,1,demographic,,,female,,,4344889,gender,0.9,4344889,gender
-8,NCT03414684,Radiation therapy,1,procedure,,,,0,30,4344890,Radiation therapy,1,4344890,Radiation therapy
-25,NCT03289039,Radiation therapy,0,procedure,,,,,,4344890,Radiation therapy,1,4344890,Radiation therapy
-9,NCT03414684,brain metastases,0,condition,,,significant,,,4344891,brain metastases,0.8,4344891,brain metastases
-10,NCT03414684,Major surgery,0,procedure,,,,,,4344892,Major surgery,1,4344892,Major surgery
-11,NCT03414684,uncontrolled non-malignant systemic disease,0,condition,,,,,,4344893,uncontrolled non-malignant systemic disease,0.8,4344893,uncontrolled non-malignant systemic disease
-12,NCT03414684,uncontrolled seizures,0,condition,,,,,,4344894,uncontrolled seizures,0.8,4344894,uncontrolled seizures
-13,NCT03414684,non-infectious pneumonitis,0,condition,,,significant,,,4344895,non-infectious pneumonitis,0.75,4344895,non-infectious pneumonitis
-14,NCT03414684,interstitial lung disease.,0,condition,,,,,,4344896,interstitial lung disease.,0.75,4344896,interstitial lung disease.
-15,NCT03414684,second malignancy,0,condition,,,,,,4344897,second malignancy,0.9,4344897,second malignancy
-16,NCT03414684,live vaccine,0,procedure,,,,0,14,4344898,live vaccine,0.9,4344898,live vaccine
-19,NCT03289039,vaccine,0,procedure,,,,0,28,899,vaccine,1,4344898,live vaccine
-17,NCT03414684,pregnant,0,condition,,,,,,4344899,pregnant,1,4344899,pregnant
-18,NCT03289039,pregnant,0,condition,,,,,,4344899,pregnant,0.8,4344899,pregnant
-26,NCT03483012,pregnant,0,condition,,,,,,4344899,pregnant,0.8,4344899,pregnant
+id,nct_id,term,ie_flag,domain,value_min,value_max,status,temporal_min,temporal_max,omop_id,omop_name,mapping_score,common_omop_id,common_omop_name,cofreq
+1,NCT03414684,breast cancer,1,condition,,,,,Inf,4344883,breast cancer,0.9,4344883,breast cancer,1
+22,NCT03289039,breast cancer,1,condition,,,,,,4344883,breast cancer,0.75,4344883,breast cancer,1
+29,NCT03483012,breast cancer,1,condition,1,,,,,4344883,breast cancer,0.8,4344883,breast cancer,1
+2,NCT03414684,age,1,demographic,18,Inf,,,,4344884,age,1,4344884,age,1
+23,NCT03289039,age,1,demographic,50,Inf,NA,,,4344884,age,0.9,4344884,age,1
+30,NCT03483012,age,1,demographic,18,80,NA,NA,,4344884,age,0.8,4344884,age,1
+3,NCT03414684,postmenopausal,1,condition,,,,,,4344885,postmenopausal,0.8,4344885,postmenopausal,1
+4,NCT03414684,Hemoglobin,1,measurement,9,Inf,,,,4344886,Hemoglobin,0.8,4344886,Hemoglobin,1
+20,NCT03289039,Hemoglobin,1,measurement,9,Inf,,,,4344886,Hemoglobin,0.8,4344886,Hemoglobin,1
+27,NCT03483012,Hemoglobin,1,measurement,5,Inf,,,,4344886,Hemoglobin,1,4344886,Hemoglobin,1
+5,NCT03414684,Platelets,1,measurement,100000,Inf,,,,4344887,Platelets,0.75,4344887,Platelets,1
+21,NCT03289039,Platelets,1,measurement,100000,,,,,4344887,Platelets,0.8,4344887,Platelets,1
+28,NCT03483012,Platelets,1,measurement,80000,Inf,,,,4344887,Platelets,0.8,4344887,Platelets,1
+6,NCT03414684,Absolute neutrophil count,1,measurement,1500,Inf,,,,4344888,Absolute neutrophil count,0.9,4344888,Absolute neutrophil count,1
+7,NCT03414684,gender,1,demographic,,,female,,,4344889,gender,0.9,4344889,gender,1
+24,NCT03289039,gender,1,demographic,,,female,,,4344889,gender,0.9,4344889,gender,1
+8,NCT03414684,Radiation therapy,1,procedure,,,,0,30,4344890,Radiation therapy,1,4344890,Radiation therapy,1
+25,NCT03289039,Radiation therapy,0,procedure,,,,,,4344890,Radiation therapy,1,4344890,Radiation therapy,1
+9,NCT03414684,brain metastases,0,condition,,,significant,,,4344891,brain metastases,0.8,4344891,brain metastases,1
+10,NCT03414684,Major surgery,0,procedure,,,,,,4344892,Major surgery,1,4344892,Major surgery,1
+11,NCT03414684,uncontrolled non-malignant systemic disease,0,condition,,,,,,4344893,uncontrolled non-malignant systemic disease,0.8,4344893,uncontrolled non-malignant systemic disease,1
+12,NCT03414684,uncontrolled seizures,0,condition,,,,,,4344894,uncontrolled seizures,0.8,4344894,uncontrolled seizures,1
+13,NCT03414684,non-infectious pneumonitis,0,condition,,,significant,,,4344895,non-infectious pneumonitis,0.75,4344895,non-infectious pneumonitis,1
+14,NCT03414684,interstitial lung disease.,0,condition,,,,,,4344896,interstitial lung disease.,0.75,4344896,interstitial lung disease.,1
+15,NCT03414684,second malignancy,0,condition,,,,,,4344897,second malignancy,0.9,4344897,second malignancy,1
+16,NCT03414684,live vaccine,0,procedure,,,,0,14,4344898,live vaccine,0.9,4344898,live vaccine,1
+19,NCT03289039,vaccine,0,procedure,,,,0,28,899,vaccine,1,4344898,live vaccine,0.7
+17,NCT03414684,pregnant,0,condition,,,,,,4344899,pregnant,1,4344899,pregnant,1
+18,NCT03289039,pregnant,0,condition,,,,,,4344899,pregnant,0.8,4344899,pregnant,1
+26,NCT03483012,pregnant,0,condition,,,,,,4344899,pregnant,0.8,4344899,pregnant,1

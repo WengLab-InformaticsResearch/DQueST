@@ -17,9 +17,10 @@ source("util/renderTrialInfo.R")
 
 wMatrix = initByCsv(File = "../resource/mock_w_matrix.csv") # for test only.
 ui <- navbarPage(
-  "eqacts Shiny app",
+  "eqacts",
   id = "navbar",
   header = tagList(
+    img(src='gif/ajax-loader-bar.gif', align = "left"),
     useShinyjs(),
     extendShinyjs("www/js/app-shinyjs.js", functions = c("updateHistory"))
   ),
@@ -72,8 +73,9 @@ ui <- navbarPage(
   tabPanel(
     "About",
     value = "about",
-    "Basic demo of supporting navigation in a Shiny app by",
-    tags$a("Dean Attali", href = "http://deanattali.com")
+    "This a demo of eqatcs - a dynamic question generating system for trial filtering.
+    User could either search by keyword or answer the questions to filter the trials.",
+    tags$a("source code", href = "https://github.com/stormliucong/",target="_blank" )
   ),
   
   # javascript embedded.
@@ -87,6 +89,8 @@ ui <- navbarPage(
   # )
   # add toolTip
   bsTooltip(id = "continue", title = "Start question or continue to next question", 
+            placement = "right", trigger = "hover"),
+  bsTooltip(id = "speed", title = "check this box to filter out trials fast meanwhile losing some accuracy", 
             placement = "right", trigger = "hover")
 )
 
