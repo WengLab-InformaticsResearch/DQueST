@@ -2,3 +2,6 @@ packrat/lib*/
 .Rproj.user
 README.md
 test
+resource/alltresults_c3.txt
+resource/*
+tools/*
