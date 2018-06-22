@@ -19,7 +19,7 @@ initByCsv = function(File){
 
 initByRd = function(rdata){
   # init by read an rda.
-  dt = NULL
+  dt = get(load(rdata))
   tryCatch(expr = {1},
            error = function(e) e,
            finally = print("init by Rda finished"))

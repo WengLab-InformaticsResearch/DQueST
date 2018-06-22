@@ -16,6 +16,11 @@ source("util/renderTrialInfo.R")
 
 
 wMatrix = initByCsv(File = "../resource/mock_w_matrix.csv") # for test only.
+demoDT = initByRd(rdata = "../resource/demoDt.rda")
+keywordDT = initByRd(rdata = "../resource/demoDt.rda")
+locationDT = initByRd(rdata = "../resource/demoDt.rda")
+
+
 ui <- navbarPage(
   "eqacts",
   id = "navbar",
@@ -29,27 +34,38 @@ ui <- navbarPage(
     "Search",
     value = "search",
     h2("You can search by condition and demographics"),
-    wellPanel(textInput(
-      inputId = "keyword",
-      label = "Enter string to search",
-      value = NULL,
-      placeholder = 'cancer'
-    ),
-    numericInput(
-      inputId = "age",
-      label = "Enter Age to search",
-      value = -1,
-      min = 0,
-      max = 100
-    ),
-    radioButtons(
-      inputId = "gender",
-      label = "Enter gender to search",
-      selected = "Male",
-      inline = TRUE,
-      choiceNames = c("Male", "Female"),
-      choiceValues = c("Male", "Female")
-    )),
+    wellPanel(
+      textInput(
+        inputId = "keyword",
+        label = "Enter string to search",
+        value = NULL,
+        placeholder = 'cancer'
+      ),
+      numericInput(
+        inputId = "age",
+        label = "Enter Age to search",
+        value = -1,
+        min = 0,
+        max = 100
+      ),
+      radioButtons(
+        inputId = "gender",
+        label = "Enter gender to search",
+        selected = "Male",
+        inline = TRUE,
+        choiceNames = c("Male", "Female"),
+        choiceValues = c("Male", "Female")
+      ),
+      radioButtons(
+        inputId = "ctrl",
+        label = "Looking for healthy volunteers",
+        selected = "Yes",
+        inline = TRUE,
+        choiceNames = c("Yes", "No"),
+        choiceValues = c("Yes", "No")
+      )
+    ), 
+
     actionButton(inputId = "search", label = "Search",class = "btn-primary"),
     actionButton(inputId = "restart", label = "Restart",class = "btn-secondary")
     
@@ -97,23 +113,25 @@ ui <- navbarPage(
 # Define server logic
 server <- function(input, output, session) {
   # init global var.
-  react <- reactiveValues(wMatrix = wMatrix, wMatrix_tmp = wMatrix, common_concept_id = NULL)
+  react <- reactiveValues(demoDt = demoDT, wMatrix= wMatrix, wMatrix_tmp = wMatrix, common_concept_id = NULL,trial_set = NULL)
   
   # event search button
   observeEvent(input$search, {
-    req(input$keyword, input$age, input$gender, react$wMatrix)
+    req(input$keyword, input$age, input$gender, input$ctrl,react$demoDt, react$wMatrix)
     # search items.
     if(dim(react$wMatrix)[1] > 0) {
-      query = formQuery(input, session)
-      react$wMatrix = searchByAll(
-        wMatrix = react$wMatrix,
-        gender = query$gender,
-        age = query$age,
-        term = query$term
+      #query = formQuery(input, session)
+      react$demoDt = searchByAll(
+        demoDt = react$demoDt,
+        gender = input$gender,
+        age = input$age,
+        term = input$keyword,
+        ctrl = input$ctrl
       )
       # restart the value.
       react$wMatrix_tmp = react$wMatrix
-      output$trial_info = renderTrialInfo(react$wMatrix_tmp, session)
+      react$trial_set = react$demoDt %>% select(nct_id) %>% distinct()
+      output$trial_info = renderTrialInfo(react$trial_set, session)
       # go to the trial tab when clicking the button
       updateTabsetPanel(session, inputId = "navbar", selected = "trials")
     } else{
