@@ -15,11 +15,12 @@ source("util/renderTrialInfo.R")
 # source("util/SwitchButton.R")
 
 
-wMatrix = initByCsv(File = "../resource/mock_w_matrix.csv") # for test only.
-trialDt = initByRd()
-demoDt = initByRd(rdata = "../resource/demoDt.rda")
+wMatrix = wMatrixInitByCsv(File = "../resource/mock_w_matrix.csv") # for test only.
+titleDt = trialDtInitByCsv(File = '../resource/titleDt.csv')
+demoDt = demoDtInitByCsv(File = "../resource/demoDt.csv")
 #keywordDT = initByRd(rdata = "../resource/demoDt.rda")
 #locationDT = initByRd(rdata = "../resource/demoDt.rda")
+trialDt = titleDt # the information want to render
 
 
 ui <- navbarPage(
@@ -68,14 +69,12 @@ ui <- navbarPage(
     ), 
 
     actionButton(inputId = "search", label = "Search",class = "btn-primary"),
-    actionButton(inputId = "restart", label = "Restart",class = "btn-secondary")
-    
+    bsTooltip(id = "search", title = "search among all trials", placement = "bottom", trigger = "hover")
   ),
   tabPanel(
     "Trials",
     value = "trials",
-    h4("Search results:"),
-    wellPanel(DTOutput(outputId = "trial_info")),
+    
     h4("You can search by answering the questions"),
     wellPanel(fluidRow(column(12, tags$div(id = "uiInput1", tags$div(id = "placeholder1")))),
               fluidRow(column(12, tags$div(id = "uiInput2", tags$div(id = "placeholder2"))))),
@@ -85,7 +84,11 @@ ui <- navbarPage(
       inputId = "continue",
       label = "Continue",
       class = "btn-info"
-    )
+    ),
+    actionButton(inputId = "restart", label = "Restart",class = "btn-secondary"),
+    bsTooltip(id = "restart", title = "refresh the app", placement = "bottom", trigger = "hover"),
+    h4("Search results:"),
+    wellPanel(DT::dataTableOutput(outputId = "trial_info"))
   ),
   tabPanel(
     "About",
@@ -115,35 +118,34 @@ ui <- navbarPage(
 server <- function(input, output, session) {
   # init global var.
   react <- reactiveValues(
-    demoDt = demoDt,
-    trialDt = trialDt,
     wMatrix = wMatrix,
-    trialDtTemp = trialDt,
+    wMatrix_tmp = wMatrix,
+    trialSet = trialDt %>% pull(nct_id) %>% unique(),
     common_concept_id = NULL
   )
   
   # event search button
   observeEvent(input$search, {
-    req(input$keyword, input$age, input$gender, input$ctrl, react$demoDt, react$trialDt)
+    req(input$age, input$gender, input$ctrl, demoDt, trialDt)
     # search items.
-    if(dim(trialMatrix)[1] > 0) {
-      #query = formQuery(input, session)
-      react$demoDt = searchByAll(
-        demoDt = react$demoDt,
-        gender = input$gender,
-        age = input$age,
-        term = input$keyword,
-        ctrl = input$ctrl
-      )
-      # restart the value.
-      react$wMatrix_tmp = react$wMatrix
-      react$trial_set = react$demoDt %>% select(nct_id) %>% distinct()
-      output$trial_info = renderTrialInfo(react$trial_set, session)
-      # go to the trial tab when clicking the button
-      updateTabsetPanel(session, inputId = "navbar", selected = "trials")
-    } else{
-      showNotification("All trials have been filtered out.")
-    }
+    
+    # always search from start.
+    
+    #query = formQuery(input, session)
+    react$trialSet = searchByAll(
+      demoDt = demoDt,
+      gender = input$gender,
+      age = input$age,
+      term = input$keyword,
+      ctrl = input$ctrl
+    )
+    # update search result.
+    react$wMatrix_tmp = react$wMatrix %>% filter(nct_id %in% react$trialSet)
+    # render trial table
+    output$trial_info = renderTrialInfo(react$trialSet, trialDt, session)
+    # go to the trial tab when clicking the button
+    updateTabsetPanel(session, inputId = "navbar", selected = "trials")
+    
   })
   
   # event restart button
@@ -153,21 +155,27 @@ server <- function(input, output, session) {
   
   # event continue button
   observeEvent(input$continue, {
-    req(react$wMatrix_tmp)
+    req(react$trialSet)
     if(dim(react$wMatrix_tmp)[1] > 0){
+      # confirm the update or search results
       react$wMatrix = react$wMatrix_tmp
-      output$trial_info = renderTrialInfo(react$wMatrix, session)
+      # render the results
+      # output$trial_info = renderTrialInfo(react$wMatrix, TrialDt, session)
       # optimize.
       react$common_concept_id = findConcept(wMatrix = react$wMatrix)
-      # render the question.
+      # generate the question.
       question = questionGet(wMatrix = react$wMatrix,
                              idx = react$common_concept_id)
+      #refresh question form.
       refreshQA(session)
+      # store questions.
+      # renderAnswer(session)
+      # render question
       renderQuestion(question, session)
       # go to the search tab when clicking the button
       # updateTabsetPanel(session, inputId = "navbar", selected = "qa")
     } else{
-      showNotification("All trials have been filtered out.")
+      showNotification("All trials have been filtered out or all trial criteria has been asked")
     }
     
   })
@@ -190,7 +198,13 @@ server <- function(input, output, session) {
         answer = answer,
         speed = input$speed
       )
-      output$trial_info = renderTrialInfo(react$wMatrix_tmp, session)
+      # update trial set
+      nct1 = react$wMatrix_tmp %>% select(nct_id) %>% distinct()
+      nct2 = react$wMatrix %>% select(nct_id) %>% distinct()
+      nct3 = react$trialSet
+      react$trialSet = setdiff(nct3,setdiff(nct2,nct1))
+      # render trial table
+      output$trial_info = renderTrialInfo(react$trialSet,trialDt, session)
       # go to the trial tab when clicking the button
       # updateTabsetPanel(session, inputId = "navbar", selected = "trials")
     } else{
