@@ -16,9 +16,10 @@ source("util/renderTrialInfo.R")
 
 
 wMatrix = initByCsv(File = "../resource/mock_w_matrix.csv") # for test only.
-demoDT = initByRd(rdata = "../resource/demoDt.rda")
-keywordDT = initByRd(rdata = "../resource/demoDt.rda")
-locationDT = initByRd(rdata = "../resource/demoDt.rda")
+trialDt = initByRd()
+demoDt = initByRd(rdata = "../resource/demoDt.rda")
+#keywordDT = initByRd(rdata = "../resource/demoDt.rda")
+#locationDT = initByRd(rdata = "../resource/demoDt.rda")
 
 
 ui <- navbarPage(
@@ -113,13 +114,19 @@ ui <- navbarPage(
 # Define server logic
 server <- function(input, output, session) {
   # init global var.
-  react <- reactiveValues(demoDt = demoDT, wMatrix= wMatrix, wMatrix_tmp = wMatrix, common_concept_id = NULL,trial_set = NULL)
+  react <- reactiveValues(
+    demoDt = demoDt,
+    trialDt = trialDt,
+    wMatrix = wMatrix,
+    trialDtTemp = trialDt,
+    common_concept_id = NULL
+  )
   
   # event search button
   observeEvent(input$search, {
-    req(input$keyword, input$age, input$gender, input$ctrl,react$demoDt, react$wMatrix)
+    req(input$keyword, input$age, input$gender, input$ctrl, react$demoDt, react$trialDt)
     # search items.
-    if(dim(react$wMatrix)[1] > 0) {
+    if(dim(trialMatrix)[1] > 0) {
       #query = formQuery(input, session)
       react$demoDt = searchByAll(
         demoDt = react$demoDt,

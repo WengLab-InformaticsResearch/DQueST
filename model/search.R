@@ -66,5 +66,6 @@ searchByAll = function(demoDt,gender,age,term,ctrl){
   tryCatch(expr = {1},
            error = function(e) e,
            finally = print("search by multiple options finished"))
-  return(demoDt)
+  trialSet = demoDt %>% pull(nct_id) %>% unique()
+  return(trialSet)
 }

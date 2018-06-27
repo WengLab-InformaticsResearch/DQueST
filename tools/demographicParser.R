@@ -1,22 +1,7 @@
 library(data.table)
 library(dplyr)
 library(stringr)
-
-df = fread(file = "../resource/demoDf.csv",header = T,na.strings = c("N/A","","NA"),
-           stringsAsFactors = F,
-           fill = T,showProgress = T)
-df[gender=='All',gender:= NA]
-df[healthy_volunteers=='Accepts Healthy Volunteers',healthy_volunteers:='Yes']
-#df_tmp = df %>% mutate(maximum_age = ageParser(maximum_age))
-#df %>% pull(maximum_age) %>% unique()
-df[!is.na(maximum_age),maximum_age1:= lapply(maximum_age,ageParser)]
-df[is.na(maximum_age),maximum_age1:=as.numeric(NA)]
-df[!is.na(minimum_age),minimum_age1:= lapply(minimum_age,ageParser)]
-df[is.na(minimum_age),minimum_age1:=as.numeric(NA)]
-
-demoDt = df
-setkey(demoDt,nct_id,gender,healthy_volunteers,minimum_age,maximum_age)
-save(demoDt,file = "../resource/demoDt.rda")
+library(tidyr)
 
 ageParser = function(age){
   if(is.na(age)){
@@ -46,3 +31,23 @@ ageParser = function(age){
   }
   return(value)
 }
+
+df = fread(file = "../resource/xmlParsed.csv",header = T,na.strings = c("N/A","","NA","NULL","All"),
+           stringsAsFactors = F,
+           fill = T,showProgress = T)
+df[healthy_volunteers=='Accepts Healthy Volunteers',healthy_volunteers:='Yes']
+#df_tmp = df %>% mutate(maximum_age = ageParser(maximum_age))
+#df %>% pull(maximum_age) %>% unique()
+df[!is.na(maximum_age),maximum_age1:= unlist(lapply(maximum_age,ageParser))]
+df[is.na(maximum_age),maximum_age1:=as.numeric(NA)]
+df[!is.na(minimum_age),minimum_age1:= unlist(lapply(minimum_age,ageParser))]
+df[is.na(minimum_age),minimum_age1:=as.numeric(NA)]
+df[,c("V1","city","country","state"):=NULL]
+
+
+demoDt = df
+setkey(demoDt,nct_id,gender,healthy_volunteers,minimum_age,maximum_age)
+write.csv(x = demoDt, file = "../resource/demoDt.csv",row.names = F)
+# save(demoDt,file = "../resource/demoDt.csv")
+
+

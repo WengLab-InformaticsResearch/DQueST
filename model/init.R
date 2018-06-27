@@ -1,5 +1,5 @@
 library(data.table)
-initByCsv = function(File){
+wMatrixInitByCsv = function(File){
   # init by read a csv file.
   dt = NULL
   dt = fread(file = File,sep = ",",
@@ -11,6 +11,37 @@ initByCsv = function(File){
         data.table = T)
   dt = formatDt(dt)
   checkFormat(dt)
+  tryCatch(expr = {1},
+           error = function(e) e,
+           finally = print("init by Csv finished"))
+  return(dt)
+}
+
+trialDtInitByCsv = function(File){
+  # init by read a csv file.
+  dt = NULL
+  dt = fread(file = File,sep = ",",
+             header = T,
+             na.strings = c("NA","NULL","","N/A"),
+             stringsAsFactors = F,
+             strip.white = T,
+             fill = T,
+             data.table = T)
+  tryCatch(expr = {1},
+           error = function(e) e,
+           finally = print("init by Csv finished"))
+  return(dt)
+}
+
+demoDtInitByCsv = function(File){
+  dt = NULL
+  dt = fread(file = File,sep = ",",
+             header = T,
+             na.strings = c("NA","NULL","","N/A"),
+             stringsAsFactors = F,
+             strip.white = T,
+             fill = T,
+             data.table = T)
   tryCatch(expr = {1},
            error = function(e) e,
            finally = print("init by Csv finished"))
