@@ -19,7 +19,9 @@ wMatrix = wMatrixInitByCsv(File = "../resource/mock_w_matrix.csv") # for test on
 titleDt = trialDtInitByCsv(File = '../resource/titleDt.csv')
 demoDt = demoDtInitByCsv(File = "../resource/demoDt.csv")
 #keywordDT = initByRd(rdata = "../resource/demoDt.rda")
-#locationDT = initByRd(rdata = "../resource/demoDt.rda")
+geoDt = geoDtInitByCsv(File = "../resource/geoDf_py.csv")
+countryName = geoDt %>% pull(country) %>% unique()
+stateName = geoDt %>% pull(state) %>% unique()
 trialDt = titleDt # the information want to render
 
 
@@ -57,6 +59,16 @@ ui <- navbarPage(
         inline = TRUE,
         choiceNames = c("Male", "Female"),
         choiceValues = c("Male", "Female")
+      ),
+      selectizeInput(inputId = 'countrySelection',
+                     label = 'Select country', 
+                     choices = countryName, 
+                     multiple = TRUE
+      ),
+      selectizeInput(inputId = 'stateSelection',
+                     label = 'Select state', 
+                     choices = stateName, 
+                     multiple = TRUE
       ),
       radioButtons(
         inputId = "ctrl",
@@ -124,21 +136,44 @@ server <- function(input, output, session) {
     common_concept_id = NULL
   )
   
+  # update state selection
+  observe({
+    x <- input$countrySelection
+    if (!is.null(x)) {
+      updateSelectizeInput(
+        session,
+        inputId = "stateSelection",
+        label = "Select state",
+        choices = geoDt %>% filter(country %in% input$countrySelection) %>% pull(state) %>% unique()
+      )
+    }
+  })
   # event search button
   observeEvent(input$search, {
     req(input$age, input$gender, input$ctrl, demoDt, trialDt)
-    # search items.
-    
+
     # always search from start.
     
     #query = formQuery(input, session)
-    react$trialSet = searchByAll(
+    termTrial = searchByTerm(
+      titleDt = titleDt,
+      term = input$keyword
+    )
+    
+    demoTrial = searchByDemo(
       demoDt = demoDt,
       gender = input$gender,
       age = input$age,
-      term = input$keyword,
       ctrl = input$ctrl
     )
+    
+    geoTrial = searchByGeo(
+      geoDt = geoDt,
+      country = input$countrySelection,
+      state = input$stateSelection
+    )
+    
+    react$trialSet
     # update search result.
     react$wMatrix_tmp = react$wMatrix %>% filter(nct_id %in% react$trialSet)
     # render trial table
