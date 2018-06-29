@@ -61,6 +61,21 @@ geoDtInitByCsv = function(File){
            error = function(e) e,
            finally = print("init by Csv finished"))
   return(dt)
+}
+
+conditionDtInitByCsv = function(File){
+  dt = NULL
+  dt = fread(file = File,sep = ",",
+             header = T,
+             na.strings = c("NA","NULL","","N/A"),
+             stringsAsFactors = F,
+             strip.white = T,
+             fill = T,
+             data.table = T)
+  tryCatch(expr = {1},
+           error = function(e) e,
+           finally = print("init by Csv finished"))
+  return(dt)
 } 
 
 initByRd = function(rdata){

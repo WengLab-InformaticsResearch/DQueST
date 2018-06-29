@@ -18,7 +18,7 @@ source("util/renderTrialInfo.R")
 wMatrix = wMatrixInitByCsv(File = "../resource/mock_w_matrix.csv") # for test only.
 titleDt = trialDtInitByCsv(File = '../resource/titleDt.csv')
 demoDt = demoDtInitByCsv(File = "../resource/demoDt.csv")
-#keywordDT = initByRd(rdata = "../resource/demoDt.rda")
+conditionDt = conditionDtInitByCsv(File = "../resource/conditionDf.csv")
 geoDt = geoDtInitByCsv(File = "../resource/geoDf_py.csv")
 countryName = geoDt %>% pull(country) %>% unique()
 stateName = geoDt %>% pull(state) %>% unique()
@@ -37,11 +37,11 @@ ui <- navbarPage(
   tabPanel(
     "Search",
     value = "search",
-    h2("You can search by condition and demographics"),
+    h4("You can search by condition, demographics and location"),
     wellPanel(
       textInput(
-        inputId = "keyword",
-        label = "Enter string to search",
+        inputId = "condition",
+        label = "Enter condition to search",
         value = NULL,
         placeholder = 'cancer'
       ),
@@ -55,29 +55,25 @@ ui <- navbarPage(
       radioButtons(
         inputId = "gender",
         label = "Enter gender to search",
-        selected = "Male",
+        selected = "All",
         inline = TRUE,
-        choiceNames = c("Male", "Female"),
-        choiceValues = c("Male", "Female")
+        choices = c("All", "Male", "Female")
       ),
-      selectizeInput(inputId = 'countrySelection',
-                     label = 'Select country', 
-                     choices = countryName, 
-                     multiple = TRUE
+      selectizeInput(
+        inputId = 'countrySelection',
+        label = 'Select country',
+        choices = countryName,
+        multiple = TRUE
       ),
-      selectizeInput(inputId = 'stateSelection',
-                     label = 'Select state', 
-                     choices = stateName, 
-                     multiple = TRUE
+      selectizeInput(
+        inputId = 'stateSelection',
+        label = 'Select state',
+        choices = stateName,
+        multiple = TRUE
       ),
-      radioButtons(
-        inputId = "ctrl",
-        label = "Looking for healthy volunteers",
-        selected = "Yes",
-        inline = TRUE,
-        choiceNames = c("Yes", "No"),
-        choiceValues = c("Yes", "No")
-      )
+      checkboxInput(inputId = "ctrl",
+                    label = "Looking for healthy volunteers",
+                    value = FALSE)
     ), 
 
     actionButton(inputId = "search", label = "Search",class = "btn-primary"),
@@ -150,37 +146,45 @@ server <- function(input, output, session) {
   })
   # event search button
   observeEvent(input$search, {
-    req(input$age, input$gender, input$ctrl, demoDt, trialDt)
-
-    # always search from start.
-    
-    #query = formQuery(input, session)
-    termTrial = searchByTerm(
-      titleDt = titleDt,
-      term = input$keyword
-    )
-    
-    demoTrial = searchByDemo(
-      demoDt = demoDt,
-      gender = input$gender,
-      age = input$age,
-      ctrl = input$ctrl
-    )
-    
-    geoTrial = searchByGeo(
-      geoDt = geoDt,
-      country = input$countrySelection,
-      state = input$stateSelection
-    )
-    
-    react$trialSet
-    # update search result.
-    react$wMatrix_tmp = react$wMatrix %>% filter(nct_id %in% react$trialSet)
-    # render trial table
-    output$trial_info = renderTrialInfo(react$trialSet, trialDt, session)
-    # go to the trial tab when clicking the button
-    updateTabsetPanel(session, inputId = "navbar", selected = "trials")
-    
+    if (is.null(input$condition)) {
+      # condition is required.
+      showNotification(paste("condition is required for search"), duration = 0)
+    } else{
+      # always search from start.
+      
+      #query = formQuery(input, session)
+      termTrial = searchByTerm(conditionDt = conditionDt,
+                               term = input$condition)
+      if(input$age > 0 | input$gender != 'All' | input$ctrl != FALSE){
+        # patient made something other than default.
+        demoTrial = searchByDemo(
+          demoDt = demoDt,
+          gender = input$gender,
+          age = input$age,
+          ctrl = input$ctrl
+        )
+      }else{
+        demoTrial = termTrial
+      }
+      
+      if(!is.null(input$countrySelection) | !is.null(input$stateSelection)){
+        geoTrial = searchByGeo(
+          geoDt = geoDt,
+          country = input$countrySelection,
+          state = input$stateSelection
+        )
+      }else{
+        geoTrial = termTrial
+      }
+      
+      react$trialSet = intersect(intersect(termTrial,demoTrial),geoTrial)
+      # update search result.
+      react$wMatrix_tmp = react$wMatrix %>% filter(nct_id %in% react$trialSet)
+      # render trial table
+      output$trial_info = renderTrialInfo(react$trialSet, trialDt, session)
+      # go to the trial tab when clicking the button
+      updateTabsetPanel(session, inputId = "navbar", selected = "trials")
+    }
   })
   
   # event restart button
