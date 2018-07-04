@@ -7,5 +7,6 @@ resource/*
 tools/PyCode/PyCode/*
 .Rhistory
 tools/ohdsiConnection.R
-app/model
+app/model/
 app/rsconnect
+.DS_Store
