@@ -1,25 +1,16 @@
 library(shiny)
 library(shinyjs)
 library(shinyBS)
-source("../model/search.R")
-source("../model/optimize.R")
-source("../model/init.R")
-source("../model/question.R")
-source("../model/update.R")
-source("util/formAnswer.R")
-source("util/formQuery.R")
-source("util/refresh.R")
-source("util/renderQuestion.R")
-source("util/renderTrialInfo.R")
-# source("util/buttonHelper.R")
-# source("util/SwitchButton.R")
+library(R.utils)
+sourceDirectory("util")
 
 
-wMatrix = wMatrixInitByCsv(File = "../resource/mock_w_matrix.csv") # for test only.
-titleDt = trialDtInitByCsv(File = '../resource/titleDt.csv')
-demoDt = demoDtInitByCsv(File = "../resource/demoDt.csv")
-conditionDt = conditionDtInitByCsv(File = "../resource/conditionDf.csv")
-geoDt = geoDtInitByCsv(File = "../resource/geoDf_py.csv")
+wMatrix = wMatrixInitByCsv(File = "model/mock_w_matrix.csv") # for test only.
+# wMatrix = wMatrixInitByCsv(File = ".model//knowledgeBase.csv") # for test only.
+titleDt = trialDtInitByCsv(File = 'model/titleDt.csv')
+demoDt = demoDtInitByCsv(File = "model/demoDt.csv")
+conditionDt = conditionDtInitByCsv(File = "model/conditionDf.csv")
+geoDt = geoDtInitByCsv(File = "model/geoDf_py.csv")
 countryName = geoDt %>% pull(country) %>% unique()
 stateName = geoDt %>% pull(state) %>% unique()
 trialDt = titleDt # the information want to render

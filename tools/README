@@ -1,0 +1,25 @@
+### _demographicXmlParsed.R and files start with _
+------------------------------------------------
+- deprecated scripts
+------------------------------------------------
+
+### conceptClusterOmop.R
+------------------------------------------------
+- core function for clustering
+------------------------------------------------
+
+### nlpPostProcess.R
+------------------------------------------------
+- core function to generate knowledgeBase
+------------------------------------------------
+
+### ohdsiConnection.R
+------------------------------------------------
+- database connection to odhsi
+- DON'T SHARE THE FILE
+------------------------------------------------
+
+### PyCode
+------------------------------------------------
+- Python code to parse the xml files.
+------------------------------------------------

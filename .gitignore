@@ -5,3 +5,7 @@ test
 resource/alltresults_c3.txt
 resource/*
 tools/PyCode/PyCode/*
+.Rhistory
+tools/ohdsiConnection.R
+app/model
+app/rsconnect
