@@ -16,7 +16,7 @@ conceptCluster = function(conceptMapping,mapping_threshold = 0.7,levels_of_separ
   conceptMappingSum = conceptMappingHighQuality[,.(scoreSum=sum(mapping_score)),by=omop_id]
   highQualityOmopId = conceptMappingSum %>% pull(omop_id) %>% unique()
   highQualityOmopId = highQualityOmopId[!highQualityOmopId %in% abstract_id]
-  source('ohdsiConnection.R')
+  source('../resource/ohdsiConnection.R')
   con = ohdsiConnection()
   conceptAncestor = tbl(con,'concept_ancestor')
   conceptAncestorHighQuality = conceptAncestor %>%

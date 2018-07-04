@@ -13,12 +13,6 @@
 - core function to generate knowledgeBase
 ------------------------------------------------
 
-### ohdsiConnection.R
-------------------------------------------------
-- database connection to odhsi
-- DON'T SHARE THE FILE
-------------------------------------------------
-
 ### PyCode
 ------------------------------------------------
 - Python code to parse the xml files.
