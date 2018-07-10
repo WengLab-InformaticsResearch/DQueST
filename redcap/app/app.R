@@ -2,12 +2,11 @@ library(shiny)
 library(shinyjs)
 library(shinyBS)
 library(R.utils)
-sourceDirectory("util/")
+sourceDirectory("util")
 
 
-# wMatrix = wMatrixInitByCsv(File = "model/mock_w_matrix.csv") # for test only.
-wMatrix = wMatrixInitByRd(rda = "model/knowledgeBase_small.rda") # for test only.
-wMatrix %>% print(n=100)
+wMatrix = wMatrixInitByCsv(File = "model/mock_w_matrix.csv") # for test only.
+# wMatrix = wMatrixInitByCsv(File = ".model//knowledgeBase.csv") # for test only.
 titleDt = trialDtInitByCsv(File = 'model/titleDt.csv')
 demoDt = demoDtInitByCsv(File = "model/demoDt.csv")
 conditionDt = conditionDtInitByCsv(File = "model/conditionDf.csv")

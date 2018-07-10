@@ -15,7 +15,7 @@ convert2day = function(time, unit) {
       "days" = time * 1,
       "weeks" = time * 7,
       "months" = time * 31,
-      "years" =  time * 365,
+      "years" = time * 365,
       NULL
     )
   }

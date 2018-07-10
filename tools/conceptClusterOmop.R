@@ -53,3 +53,18 @@ conceptCluster = function(conceptMapping,mapping_threshold = 0.7,levels_of_separ
 # write.csv(x = conceptMappingAncestor,file = "../resource/concept_cluster_result.csv",row.names = F)
 # 
 # conceptMappingAncestor %>% filter(common_omop_id=='4274025')
+
+getConceptName = function(conceptIdTbl){
+  source('../resource/ohdsiConnection.R')
+  con = ohdsiConnection()
+  conceptName = tbl(con,'concept')
+  conceptId = conceptIdTbl %>% pull(common_omop_id) %>% unique()
+  conceptNameTbl = conceptName %>%
+    filter(concept_id %in% conceptId) %>%
+    rename(common_omop_name = concept_name) %>%
+    select(concept_id,common_omop_name) %>%
+    collect()
+  conceptNameTbl = conceptIdTbl %>% left_join(conceptNameTbl,by=c('common_omop_id'='concept_id'))
+  return(conceptNameTbl)
+}
+  

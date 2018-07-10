@@ -1,0 +1,226 @@
+---
+title: "Redcap Optimization Condition Demo"
+author: "Cong Liu"
+date: "7/5/2018"
+output:
+  html_document: 
+    number_sections: yes
+    toc: yes
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(devtools)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Objective
+Using condition as an example to show how to generate branch logic for variable.
+
+# Dataset
+demo data and data dictionary
+
+```{r}
+rm(list=ls())
+library(dplyr)
+rawData = read.csv("RecruitmentOptimizat_DATA_2018-07-05_0832.csv",header = TRUE,na.strings = c("NA",""))
+rawData %>% as_tibble() %>% knitr::kable()
+```
+
+# Algorithm Overview
+- step 1: initialization
+- step 2: add branch logic by iteration
+
+# function: optimalTerm
+- optimalTerm is to select the most informative questions given current working matrix.
+- select the condition appears most frequently in trials.
+
+```{r}
+optimalTerm = function(wMatrix){
+  term = NULL
+  if(dim(wMatrix)[1] > 0){
+    term = wMatrix %>% 
+    group_by(condition_pull) %>% 
+    summarise(num_of_nct_id = n()) %>% 
+    arrange(-num_of_nct_id) %>% 
+    head(n=1) %>% 
+    pull(condition_pull)
+  }
+  return(term)
+}
+```
+
+# function: addBranchLogic
+- add branch logic is to iterative all possible answer combinations and grow the tree 
+- update wMatrix by comparing the answer to wMatrix
+- select optimal term from updated wMatrix
+- depth first search
+- add leaf node when no trials left in wMatrix.
+- add branch logic for each newly generated term.
+
+```{r}
+addBranchLogic = function(wTerm,
+                          wMatrixCondition,
+                          seq) {
+  # iterative through all possible answer combination.
+  for (i in 1:dim(conditionAnswer)[1]) {
+    # 1. wTerm appear in this nct.
+    removed_nct = wMatrixCondition %>% filter(condition_pull == wTerm)
+    # 2. ie_flag = 0 & answer matches criteria
+    removed_nct_0 = removed_nct %>% filter(condition_incexc == 0)
+    removed_nct_01 = removed_nct_0 %>% filter(
+      conditionAnswer$Exist[i] == 1 &
+        is.na(condition_severity) & is.na(condition_duration)
+    )
+    removed_nct_02 = removed_nct_0 %>% filter(
+      conditionAnswer$Exist[i] == 1 &
+        is.na(condition_severity) &
+        condition_duration == conditionAnswer$Duration[i]
+    )
+    removed_nct_03 = removed_nct_0 %>% filter(
+      conditionAnswer$Exist[i] == 1 &
+        condition_severity == conditionAnswer$Severity[i] &
+        is.na(condition_duration)
+    )
+    removed_nct_04 = removed_nct_0 %>% filter(
+      conditionAnswer$Exist[i] == 1 &
+        condition_severity == conditionAnswer$Severity[i] &
+        condition_duration == conditionAnswer$Duration[i]
+    )
+    # 3. ie_flag = 1 & answer does not matches criteria
+    removed_nct_1 = removed_nct %>% filter(condition_incexc == 1)
+    removed_nct_11 = removed_nct_1 %>% filter(conditionAnswer$Exist[i] == 0)
+    removed_nct_12 = removed_nct_1 %>% filter(conditionAnswer$Exist[i] == 1 &
+                                                ((
+                                                  !is.na(condition_severity) &
+                                                    condition_severity != conditionAnswer$Severity[i]
+                                                )
+                                                |
+                                                  (
+                                                    !is.na(condition_duration) &
+                                                      condition_duration != conditionAnswer$Duration[i]
+                                                  )
+                                                ))
+    # union the unqualified record_id.
+    removeRecordId = bind_rows(
+      removed_nct_01,
+      removed_nct_02,
+      removed_nct_03,
+      removed_nct_04,
+      removed_nct_11,
+      removed_nct_12
+    ) %>% pull(record_id) %>% unique()
+    
+    # update working matrix by removing term related rows and unqualified trials related rows
+    newWMatrixCondition = wMatrixCondition %>% filter(!record_id %in% removeRecordId)
+    newWMatrixCondition = newWMatrixCondition %>% filter(!condition_pull %in% wTerm)
+    
+    # select optimal term given new working matrix.
+    newTerm = optimalTerm(newWMatrixCondition)
+    
+    # seq records the level of tree. 
+    # depth-first search. go to next level.
+    newseq = seq + 1
+    
+    # add a branch logic for the new term.
+    row = tibble(
+      seq = newseq,
+      descendant = newTerm,
+      ancestor = wTerm,
+      exist = conditionAnswer$Exist[i],
+      severity = conditionAnswer$Severity[i],
+      duration = conditionAnswer$Duration[i]
+    )
+    branch_logic <<- branch_logic %>% bind_rows(row)
+    
+    # continue (DFS) search for next level if there are still trials remains in new wMatrix.
+    if (dim(newWMatrixCondition)[1] > 0) {
+      # call addBranchLogic recursively.
+      addBranchLogic(wTerm = newTerm,
+                     wMatrixCondition = newWMatrixCondition,
+                     seq = newseq)
+    } 
+    # end search and add a leaf node if no trials remains in working matrix.
+    else{
+      row = tibble(
+        seq = newseq,
+        descendant = "leaf",
+        ancestor = wTerm,
+        exist = conditionAnswer$Exist[i],
+        severity = conditionAnswer$Severity[i],
+        duration = conditionAnswer$Duration[i]
+      )
+      branch_logic <<- branch_logic %>% bind_rows(row)
+    }
+  }
+  return(0)
+}
+```
+
+# Init1: initialize working Matrix
+
+```{r}
+conditionMatrix = rawData %>% filter(redcap_repeat_instrument == "conditions") %>% 
+  select(record_id,redcap_repeat_instrument,redcap_repeat_instance,condition_pull,condition_severity,condition_duration,condition_incexc)
+# test for condition
+MatrixCondition = conditionMatrix %>% 
+  select(record_id, condition_pull,condition_incexc,condition_severity,condition_duration)
+initWMatrixCondition = MatrixCondition
+initWMatrixCondition
+```
+
+# Init2: initail Term
+
+```{r}
+initCondition = optimalTerm(initWMatrixCondition)
+initWTerm = initCondition
+initWTerm
+```
+
+# Init3: prepare possible answers `2*3*6`
+
+```{r}
+conditionExistAnswer = c(0,1)
+conditionSeverityAnswer = c(1,2,3)
+conditionDurationAnswer = c(1,2,3,4,5,6)
+conditionAnswer = as_tibble(data.frame(Exist=numeric(),Severity=numeric(),Duration=numeric()))
+for(i in conditionExistAnswer){
+  for(j in conditionSeverityAnswer){
+    for(k in conditionDurationAnswer){
+      row = as_tibble(data.frame(Exist=i,Severity=j,Duration=k))
+      conditionAnswer = conditionAnswer %>% bind_rows(row)
+    }
+  }
+}
+conditionAnswer
+```
+
+# Init4: global branch_logic tree
+
+- a branch logic for each term is OR operation on or possible path from root to the node.
+- e.g. q1(0,1,1)-q2(0,1,1)-q3 OR q1(1,2,3)-q3
+```{r}
+initSeq = 0
+branch_logic <<- tibble(seq = initSeq, descendant = initWTerm, ancestor = 'root', exist = NA, severity = NA, duration = NA)
+branch_logic
+```
+
+# Iter: Call addBranchLogic recursively
+- After few experiment, I realized the problem. 
+- addBranchLogic runs forever...
+- Tree based branch logic will cause search expoloision. 36^25
+- There are 68 unique branch.
+- the tree depth is 21~25.
+- Using a dynamic app is fine
+- How to find a way to store static branch logic (The tree is huge)? 
+
+```{r}
+# a = addBranchLogic(wTerm = initWTerm,wMatrixCondition = initWMatrixCondition,seq = initSeq)
+branch_logic
+```
+
+```{r}
+numberOfuniqueCondition = conditionMatrix %>% pull(condition_pull) %>% unique() %>% length()
+numberOfuniqueCondition
+```

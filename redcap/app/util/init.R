@@ -17,17 +17,6 @@ wMatrixInitByCsv = function(File){
   return(dt)
 }
 
-wMatrixInitByRd = function(rda){
-  dt = NULL
-  dt = get(load(file = rda))
-  dt$status = NA
-  dt = as.data.table(dt)
-  tryCatch(expr = {1},
-           error = function(e) e,
-           finally = print("init by Csv finished"))
-  return(dt)
-}
-
 trialDtInitByCsv = function(File){
   # init by read a csv file.
   dt = NULL
