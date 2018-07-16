@@ -18,3 +18,15 @@
 - Python code to parse the xml files.
 - numericParse.py parse numeric to \d to \d for temporal and value
 ------------------------------------------------
+
+### removeConflictCriteria.R
+------------------------------------------------
+- remove conflict (e.g. negated in both inclusion or exclusion)
+- To be implemented.
+------------------------------------------------
+
+### addConceptMapping.R
+------------------------------------------------
+- adding the concept mapping and mapping result to dt.
+- output final knowledge base
+------------------------------------------------

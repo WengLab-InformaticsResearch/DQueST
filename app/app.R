@@ -1,27 +1,16 @@
+rm(list=ls())
+setwd('~/Project/eqacts/app/')
 library(shiny)
 library(shinyjs)
 library(shinyBS)
 library(R.utils)
-sourceDirectory("util/")
-
-
-# wMatrix = wMatrixInitByCsv(File = "model/mock_w_matrix.csv") # for test only.
-wMatrix = wMatrixInitByRd(rda = "model/knowledgeBase_small.rda") # for test only.
-wMatrix %>% print(n=100)
-titleDt = trialDtInitByCsv(File = 'model/titleDt.csv')
-demoDt = demoDtInitByCsv(File = "model/demoDt.csv")
-conditionDt = conditionDtInitByCsv(File = "model/conditionDf.csv")
-geoDt = geoDtInitByCsv(File = "model/geoDf_py.csv")
-countryName = geoDt %>% pull(country) %>% unique()
-stateName = geoDt %>% pull(state) %>% unique()
-trialDt = titleDt # the information want to render
-
+sourceDirectory("~/Project/eqacts/app/util")
+post_data = load_data()
 
 ui <- navbarPage(
   "eqacts",
   id = "navbar",
   header = tagList(
-    img(src='gif/ajax-loader-bar.gif', align = "left"),
     useShinyjs(),
     extendShinyjs("www/js/app-shinyjs.js", functions = c("updateHistory"))
   ),
@@ -54,13 +43,13 @@ ui <- navbarPage(
       selectizeInput(
         inputId = 'countrySelection',
         label = 'Select country',
-        choices = countryName,
+        choices = post_data$countryName,
         multiple = TRUE
       ),
       selectizeInput(
         inputId = 'stateSelection',
         label = 'Select state',
-        choices = stateName,
+        choices = post_data$stateName,
         multiple = TRUE
       ),
       checkboxInput(inputId = "ctrl",
@@ -118,9 +107,10 @@ ui <- navbarPage(
 server <- function(input, output, session) {
   # init global var.
   react <- reactiveValues(
-    wMatrix = wMatrix,
-    wMatrix_tmp = wMatrix,
-    trialSet = trialDt %>% pull(nct_id) %>% unique(),
+    wMatrix = post_data$wMatrix,
+    wMatrix_tmp = post_data$wMatrix,
+    trialSet = post_data$trialDt %>% pull(nct_id) %>% unique(),
+    trialSet_tmp = NULL,
     common_concept_id = NULL
   )
   
@@ -132,7 +122,7 @@ server <- function(input, output, session) {
         session,
         inputId = "stateSelection",
         label = "Select state",
-        choices = geoDt %>% filter(country %in% input$countrySelection) %>% pull(state) %>% unique()
+        choices = post_data$geoDt %>% filter(country %in% input$countrySelection) %>% pull(state) %>% unique()
       )
     }
   })
@@ -142,15 +132,15 @@ server <- function(input, output, session) {
       # condition is required.
       showNotification(paste("condition is required for search"), duration = 0)
     } else{
-      # always search from start.
-      
       #query = formQuery(input, session)
-      termTrial = searchByTerm(conditionDt = conditionDt,
-                               term = input$condition)
+      # termTrial = searchByTerm(conditionDt = conditionDt,
+      #                          term = input$condition)
+      termTrial = searchByApi(trialDt = post_data$trialDt,
+                              term = input$condition)
       if(input$age > 0 | input$gender != 'All' | input$ctrl != FALSE){
         # patient made something other than default.
         demoTrial = searchByDemo(
-          demoDt = demoDt,
+          demoDt = post_data$demoDt,
           gender = input$gender,
           age = input$age,
           ctrl = input$ctrl
@@ -161,7 +151,7 @@ server <- function(input, output, session) {
       
       if(!is.null(input$countrySelection) | !is.null(input$stateSelection)){
         geoTrial = searchByGeo(
-          geoDt = geoDt,
+          geoDt = post_data$geoDt,
           country = input$countrySelection,
           state = input$stateSelection
         )
@@ -169,11 +159,11 @@ server <- function(input, output, session) {
         geoTrial = termTrial
       }
       
-      react$trialSet = intersect(intersect(termTrial,demoTrial),geoTrial)
+      react$trialSet_tmp = intersect(intersect(termTrial,demoTrial),geoTrial)
       # update search result.
       react$wMatrix_tmp = react$wMatrix %>% filter(nct_id %in% react$trialSet)
       # render trial table
-      output$trial_info = renderTrialInfo(react$trialSet, trialDt, session)
+      output$trial_info = renderTrialInfo(react$trialSet_tmp, post_data$trialDt, session)
       # go to the trial tab when clicking the button
       updateTabsetPanel(session, inputId = "navbar", selected = "trials")
     }
@@ -187,11 +177,10 @@ server <- function(input, output, session) {
   # event continue button
   observeEvent(input$continue, {
     req(react$trialSet)
-    if(dim(react$wMatrix_tmp)[1] > 0){
+    if(dim(react$wMatrix_tmp)[1] > 0 & length(react$trialSet_tmp) > 0){
       # confirm the update or search results
       react$wMatrix = react$wMatrix_tmp
-      # render the results
-      # output$trial_info = renderTrialInfo(react$wMatrix, TrialDt, session)
+      react$trialSet = react$trialSet_tmp
       # optimize.
       react$common_concept_id = findConcept(wMatrix = react$wMatrix)
       # generate the question.
@@ -211,8 +200,8 @@ server <- function(input, output, session) {
     
   })
   
-  # event submit button
-  observeEvent(input$submit, {
+  # event update button
+  observeEvent(input$update, {
     req(react$wMatrix, react$common_concept_id)
     if (dim(react$wMatrix)[1] > 0) {
       if (input$skip == TRUE) {
@@ -230,40 +219,18 @@ server <- function(input, output, session) {
         speed = input$speed
       )
       # update trial set
-      nct1 = react$wMatrix_tmp %>% select(nct_id) %>% distinct()
-      nct2 = react$wMatrix %>% select(nct_id) %>% distinct()
+      nct1 = react$wMatrix_tmp %>% pull(nct_id) %>% unique()
+      nct2 = react$wMatrix %>% pull(nct_id) %>% unique()
       nct3 = react$trialSet
-      react$trialSet = setdiff(nct3,setdiff(nct2,nct1))
+      react$trialSet_tmp = setdiff(nct3,setdiff(nct2,nct1))
       # render trial table
-      output$trial_info = renderTrialInfo(react$trialSet,trialDt, session)
+      output$trial_info = renderTrialInfo(react$trialSet_tmp,post_data$trialDt, session)
       # go to the trial tab when clicking the button
       # updateTabsetPanel(session, inputId = "navbar", selected = "trials")
     } else{
       showNotification("All trials have been filtered out.")
     }
   })
-  
-  # event skip button
-  # observeEvent(input$skip, {
-  #   req(react$wMatrix, react$common_concept_id)
-  #   if(dim(react$wMatrix)[1] > 0) {
-  #     # update the wMatrix.
-  #     react$wMatrix = updateWMatrix(
-  #       wMatrix = react$wMatrix,
-  #       common_concept_id = react$common_concept_id,
-  #       answer = NULL
-  #     )
-  #     output$trial_info = renderTrialInfo(react$wMatrix, session)
-  #     
-  #     # restart the value.
-  #     refreshQA(session)
-  #     # go to the trial tab when clicking the button
-  #     # updateTabsetPanel(session, inputId = "navbar", selected = "trials")
-  #   } else{
-  #     showNotification("All trials have been filtered out.")
-  #   }
-  # })
-  
 }
 
 shinyApp(ui = ui, server = server)

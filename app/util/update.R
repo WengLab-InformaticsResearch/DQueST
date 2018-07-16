@@ -42,8 +42,6 @@ removeTrialsByDomain = function(relatedTrialsWMatrix, domain, answer, speed) {
 }
 
 removeTrialsDemo = function(relatedTrialsWMatrix, answer, speed) {
-  print(relatedTrialsWMatrix)
-  print(answer)
   if (!is.null(answer$value)) {
     # age.
     trialsRemoved = relatedTrialsWMatrix %>%
@@ -90,15 +88,11 @@ removeTrial = function(relatedTrialsWMatrixAdd, speed) {
 }
 
 removeTrialsCondition = function(relatedTrialsWMatrix, answer, speed) {
-  print(relatedTrialsWMatrix)
-  print(answer)
   if (is.null(answer$status) &
       is.null(answer$time)) {
     # no status or temporal
     relatedTrialsWMatrixAdd = relatedTrialsWMatrix %>%
       mutate(match = (answer$exist == "YES"))
-    print(relatedTrialsWMatrixAdd)
-    
   }
   
   if (is.null(answer$status) & !is.null(answer$time)) {
@@ -135,8 +129,6 @@ removeTrialsCondition = function(relatedTrialsWMatrix, answer, speed) {
 }
 
 removeTrialsObservation = function(relatedTrialsWMatrix, answer, speed) {
-  print(relatedTrialsWMatrix)
-  print(answer)
   relatedTrialsWMatrixAdd = relatedTrialsWMatrix %>%
     mutate(match = (answer$exist == "YES"))
   trialsRemoved = removeTrial(relatedTrialsWMatrixAdd, speed)
@@ -144,8 +136,6 @@ removeTrialsObservation = function(relatedTrialsWMatrix, answer, speed) {
 }
 
 removeTrialsMeasurement = function(relatedTrialsWMatrix, answer, speed) {
-  print(relatedTrialsWMatrix)
-  print(answer)
   relatedTrialsWMatrixAdd = relatedTrialsWMatrix %>%
     mutate(match = (value_min < answer$value &
                       value_max > answer$value))

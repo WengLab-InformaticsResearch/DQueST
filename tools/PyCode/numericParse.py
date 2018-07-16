@@ -169,7 +169,7 @@ def parse_temporal(temporal):
 
 if __name__ == '__main__':
     o = open('../../resource/ec_parsed_matrix_parsed.csv','w+')
-    with open('../../resource/ec_parsed_matrix_v2.csv') as f:
+    with open('../../resource/ec_parsed_matrix_v3.csv') as f:
         for line in f:
             fields = line.rstrip().split('\t')
             temporal = fields[6]
@@ -180,3 +180,4 @@ if __name__ == '__main__':
             # print(row_append)
             o.write(row_append)
     o.close()
+

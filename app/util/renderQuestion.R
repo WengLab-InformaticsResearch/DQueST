@@ -12,7 +12,7 @@ renderQuestion = function(question,session){
     selector = "#placeholder1",
     where = "beforeBegin",
     actionButton(
-      inputId = "submit",
+      inputId = "update",
       label = "Update",
       class = "btn-success"
     ),

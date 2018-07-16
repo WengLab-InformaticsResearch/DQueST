@@ -1,21 +1,21 @@
 library(data.table)
-wMatrixInitByCsv = function(File){
-  # init by read a csv file.
-  dt = NULL
-  dt = fread(file = File,sep = ",",
-        header = T,
-        na.strings = c("NA","NULL",""),
-        stringsAsFactors = F,
-        strip.white = T,
-        fill = T,
-        data.table = T)
-  dt = formatDt(dt)
-  checkFormat(dt)
-  tryCatch(expr = {1},
-           error = function(e) e,
-           finally = print("init by Csv finished"))
-  return(dt)
-}
+# wMatrixInitByCsv = function(File){
+#   # init by read a csv file.
+#   dt = NULL
+#   dt = fread(file = File,sep = ",",
+#         header = T,
+#         na.strings = c("NA","NULL",""),
+#         stringsAsFactors = F,
+#         strip.white = T,
+#         fill = T,
+#         data.table = T)
+#   dt = formatDt(dt)
+#   checkFormat(dt)
+#   tryCatch(expr = {1},
+#            error = function(e) e,
+#            finally = print("init by Csv finished"))
+#   return(dt)
+# }
 
 wMatrixInitByRd = function(rda){
   dt = NULL
@@ -24,7 +24,7 @@ wMatrixInitByRd = function(rda){
   dt = as.data.table(dt)
   tryCatch(expr = {1},
            error = function(e) e,
-           finally = print("init by Csv finished"))
+           finally = print("load knowledge base finished!"))
   return(dt)
 }
 
@@ -40,7 +40,7 @@ trialDtInitByCsv = function(File){
              data.table = T)
   tryCatch(expr = {1},
            error = function(e) e,
-           finally = print("init by Csv finished"))
+           finally = print("load trial DT finished"))
   return(dt)
 }
 
@@ -55,7 +55,7 @@ demoDtInitByCsv = function(File){
              data.table = T)
   tryCatch(expr = {1},
            error = function(e) e,
-           finally = print("init by Csv finished"))
+           finally = print("load demographic DT finished"))
   return(dt)
 }
 
@@ -70,7 +70,7 @@ geoDtInitByCsv = function(File){
              data.table = T)
   tryCatch(expr = {1},
            error = function(e) e,
-           finally = print("init by Csv finished"))
+           finally = print("load geographic DT finished"))
   return(dt)
 }
 
@@ -132,21 +132,21 @@ formatDt = function(dt) {
   return(dt)
 }
 
-checkFormat = function(dt){
-  # check colnames.
-  if(dim(dt)[2] != 16){
-    stop("colname is not compatible.")
-  }
-  if(sum(colnames(dt) == c("id","nct_id","term","ie_flag",
-                       "domain","value_min","value_max",
-                       "status","temporal_min","temporal_max",
-                       "omop_id","omop_name","mapping_score",
-                       "common_omop_id","common_omop_name","cofreq")) != 16){
-    stop("colname is not compatible.")
-  }
-  if(dim(dt)[1] < 5){
-    stop("please input more trials.")
-  }
-  return(NULL)
-}
+# checkFormat = function(dt){
+#   # check colnames.
+#   if(dim(dt)[2] != 16){
+#     stop("colname is not compatible.")
+#   }
+#   if(sum(colnames(dt) == c("id","nct_id","term","ie_flag",
+#                        "domain","value_min","value_max",
+#                        "status","temporal_min","temporal_max",
+#                        "omop_id","omop_name","mapping_score",
+#                        "common_omop_id","common_omop_name","cofreq")) != 16){
+#     stop("colname is not compatible.")
+#   }
+#   if(dim(dt)[1] < 5){
+#     stop("please input more trials.")
+#   }
+#   return(NULL)
+# }
 

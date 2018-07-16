@@ -1,3 +1,21 @@
+searchByApi = function(trialDt,term){
+  # only supported by condition
+  if(dim(trialDt)[1] < 1){
+    return(NULL)
+  }
+  nctFromApi = get_nct_by_term(term)
+  if(is.null(nctFromApi)){
+    trialSet = trialDt %>% pull(nct_id) %>% unique()
+  }
+  trialSet = trialDt[nct_id %in% nctFromApi] %>%
+    pull(nct_id) %>% unique()
+  tryCatch(expr = {1},
+           error = function(e) e,
+           finally = print("search by condition finished"))
+  return(trialSet)
+}
+
+
 searchByAge = function(demoDt,age){
   if(dim(demoDt)[1] < 1){
     return(demoDt)

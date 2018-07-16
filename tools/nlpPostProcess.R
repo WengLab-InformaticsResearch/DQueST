@@ -1,56 +1,33 @@
 library(data.table)
 library(dplyr)
-source("conceptClusterOmop.R")
-source("valueParser.R")
-
+source("removeConflictCriteria.R")
+source("reFormatParsedDt.R")
+source("removeIncOnlyTrial.R")
 # import structured ec table.
-dt = fread(file = '../resource/ec_parsed_matrix_parsed.csv',sep = "\t",
-           header = T,stringsAsFactors = F,
+# ec table is provided by Chi
+# and then parsed by PyCode
+dt = fread(file = '../resource/ec_parsed_matrix_v3.txt',sep = "\t",nThread = 4,
+           header = F,stringsAsFactors = F,
            fill = T,showProgress = T,
            na.strings = c("no_temporal","no_value",'NA'))
-colnames(dt) = c('cid','nct_id','ie_flag','term','domain','negation','temporal','value','temporal_min','temporal_max','temporal_unit','value_min','value_max','value_unit')
-# change domain to lower case.
-dt[,':='(domain=tolower(domain))]
-# change term to lower case.
-dt[,':='(term=tolower(term))]
-# change ie_flag to 1/0
-dt[,':='(ie_flag=(ie_flag=='INC'))]
-dt[,':='(ie_flag=as.numeric(ie_flag))]
-# change negation to 1/0
-dt[,':='(negation=as.numeric(negation))]
-dt[,':='(ie_flag=xor(ie_flag,negation))]
-dt[,':='(ie_flag=as.numeric(ie_flag))]
-dt[,'negation':=NULL] # drop negation.
+# dt %>% pull(V1) %>% unique() %>% length()
+# dt = removeIncOnlyTrial(dt)
+# dt %>% pull(V1) %>% unique() %>% length()
+dt[V3=='pregnant' & V2=='INC' & V5==FALSE]
+dt[V3=='pregnant' & V2=='INC' & V5==TRUE]
+dt[V3=='pregnant' & V2=='EXC' & V5==FALSE]
+dt[V3=='pregnant' & V2=='EXC' & V5==TRUE]
 
-dt[,':='(temporal_min=as.numeric(temporal_min))]
-dt[,':='(temporal_max=as.numeric(temporal_max))]
-dt[,':='(value_min=as.numeric(value_min))]
-dt[,':='(value_max=as.numeric(value_max))]
+# colnames(dt) = c('cid','nct_id','ie_flag','term','domain','negation','temporal','value','temporal_min','temporal_max','temporal_unit','value_min','value_max','value_unit')
 
+dt %>% group_by(V1) %>% filter(V2 %in% 'INC') %>% summarise(inclusion_n = n()) %>% pull(V1) %>% unique() %>% length()
+dt %>% group_by(V1) %>% filter(V2 %in% 'EXC') %>% summarise(inclusion_n = n()) %>% pull(V1) %>% unique() %>% length()
 
-# import concept mapping table.
-conceptMapping = fread(file = '../resource/concept_mapping_result_v3.txt',sep = "\t",header = F,fill = T,stringsAsFactors = F,data.table = T,nThread = 4)
-colnames(conceptMapping) = c('term','domain','mapping_term','mapping_score','omop_id')
-# filter out some manually curated high level abstracted concept id.
-HighLevelConceptId = read.csv("../resource/high_level_id.csv",header = F)
-HighLevelConceptId = HighLevelConceptId$V1
-# concept clustering.
-conceptMappingAncestor = conceptCluster(conceptMapping = conceptMapping,
-                                        mapping_threshold = 0.7,
-                                        levels_of_separation = 1,
-                                        low_count_threshold = 5,
-                                        abstract_id = HighLevelConceptId)
-conceptMappingAncestor = as.data.table(conceptMappingAncestor)
-conceptMappingAncestorName = getConceptName(conceptIdTbl = conceptMappingAncestor)
-conceptMappingAncestorName = as.data.table(conceptMappingAncestorName)
-# join tables.
-setindexv(conceptMappingAncestorName, "omop_id")
-setindexv(conceptMapping, "omop_id")
-conceptMappingWithCluster = conceptMapping[conceptMappingAncestorName,on = 'omop_id',allow.cartesian = TRUE] # make sure to add allow.cartesian = TRUE
-conceptMappingWithCluster[,':='(domain=tolower(domain))]
-setindexv(conceptMappingWithCluster, c("term","domain"))
-setindexv(dt, c("term","domain"))
-knowledgeBase <- dt[conceptMappingWithCluster,on = c('term','domain'),allow.cartesian = TRUE] # make sure to add allow.cartesian = TRUE
+dt = removeIncOnlyTrial(dt)
+dt = reFormatParsedDt(dt)
+dt = addConceptMapping(dt)
+dt = removeConflictCriteria(dt)
+
 fwrite(x = knowledgeBase, file = '../resource/knowledgeBase.csv',nThread = 4)
 save(knowledgeBase,file = '../resource/knowledgeBase.rda')
 knowledgeBase_small = knowledgeBase[,.(nct_id,ie_flag,domain,temporal_min,temporal_max,value_min,value_max,value_unit,mapping_term,mapping_score,omop_id,common_omop_id,common_omop_name)]
