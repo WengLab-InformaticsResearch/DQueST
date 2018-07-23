@@ -10,3 +10,4 @@ tools/ohdsiConnection.R
 app/model/
 app/rsconnect
 .DS_Store
+packrat/src/

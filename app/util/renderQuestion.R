@@ -20,7 +20,7 @@ renderQuestion = function(question,session){
   )
   addTooltip(
     session,
-    id = "submit",
+    id = "update",
     title = "Update the above trial list",
     placement = "right",
     trigger = "hover"
@@ -107,7 +107,7 @@ insertRatioButtons <- function(label, choices) {
     selector = "#placeholder1",
     where = "beforeBegin",
     radioButtons(
-      inputId = "radio",
+      inputId = "radio_qa",
       label = label,
       choices = choices
     ),
@@ -121,7 +121,7 @@ insertCheckboxGroupInput = function(label, choices) {
     selector = "#placeholder1",
     where = "beforeBegin",
     checkboxGroupInput(
-      inputId = "checkbox",
+      inputId = "checkbox_qa",
       label = label,
       choices = choices
     ),
@@ -135,7 +135,7 @@ insertNumericInput <- function(label) {
     selector = "#placeholder1",
     where = "beforeBegin",
     numericInput(
-      inputId = "value",
+      inputId = "value_qa",
       label = label,
       value = -1
     ),
@@ -152,13 +152,13 @@ insertTimeInput = function(label) {
              fluidRow(
                column(6,
                       numericInput(
-                        inputId = "time",
+                        inputId = "time_qa",
                         label = '',
                         value = -1
                       )),
                column(6,
                       selectInput(
-                        inputId = "time_unit",
+                        inputId = "time_unit_qa",
                         label = '',
                         choices = c("days", "weeks", "months", "years")
                       ))

@@ -4,18 +4,26 @@ updateWMatrix = function(wMatrix,
                          speed = TRUE) {
   # update wMatrix.
   wMatrix_new = wMatrix
+  print(paste0("--trials Origin:",wMatrix %>% pull(nct_id) %>% unique() %>% length()))
   
   relatedTrialsWMatrix = wMatrix_new %>% filter(common_omop_id == common_concept_id)
+  print(paste0("--trials Related:",relatedTrialsWMatrix %>% pull(nct_id) %>% unique() %>% length()))
+  
   # only compute if patient answer the question.
   if (!is.null(answer)) {
     domain = relatedTrialsWMatrix %>%
       pull(domain) %>% unique()
     trialsRemoved = removeTrialsByDomain(relatedTrialsWMatrix, domain, answer, speed)
+    print(paste0("--trials Removed:",length(trialsRemoved)))
+    
     # remove unqualified trials.
     wMatrix_new = wMatrix_new %>% filter(!nct_id %in% trialsRemoved)
+    print(paste0("--trials Updated:",wMatrix_new %>% pull(nct_id) %>% unique() %>% length()))
   }
   # remove the criteria from the working matrix.
-  wMatrix_new = wMatrix_new %>% filter(common_omop_id != common_concept_id)
+  # THIS IS A BUG: remove this operation
+  # wMatrix_new = wMatrix_new %>% filter(common_omop_id != common_concept_id)
+  # print(paste0("--trials Updated 2:",wMatrix_new %>% pull(nct_id) %>% unique() %>% length()))
   
   tryCatch(
     expr = {

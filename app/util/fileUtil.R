@@ -85,7 +85,7 @@ conditionDtInitByCsv = function(File){
              data.table = T)
   tryCatch(expr = {1},
            error = function(e) e,
-           finally = print("init by Csv finished"))
+           finally = print("load condition finished"))
   return(dt)
 } 
 

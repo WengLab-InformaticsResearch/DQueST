@@ -2,7 +2,6 @@
 library(httr)
 library(xml2)
 
-
 get_nct_by_advanced = function(param) {
   nct_id_list = NULL
   tryCatch({1})

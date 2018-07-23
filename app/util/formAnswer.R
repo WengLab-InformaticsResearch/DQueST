@@ -1,9 +1,9 @@
 formAnswer = function(input,session){
   answer = NULL
-  answer$exist = input$radio
-  answer$status = input$status
-  answer$value = input$value
-  answer$time = convert2day(input$time,input$time_unit)
+  answer$exist = input$radio_qa
+  answer$status = input$status_qa
+  answer$value = input$value_qa
+  answer$time = convert2day(input$time_qa,input$time_unit_qa)
   return(answer)
 }
 

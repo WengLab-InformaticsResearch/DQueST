@@ -9,14 +9,11 @@ refreshQA <- function(session){
   # used only for shinny server.
   # session: shinny session.
   # cat("Refresh PlaceHolder\n")
-  session$sendCustomMessage(type = "resetValue", message = "keyword")
-  session$sendCustomMessage(type = "resetValue", message = "age")
-  session$sendCustomMessage(type = "resetValue", message = "gender")
-  session$sendCustomMessage(type = "resetValue", message = "value")
-  session$sendCustomMessage(type = "resetValue", message = "time")
-  session$sendCustomMessage(type = "resetValue", message = "time_unit")
-  session$sendCustomMessage(type = "resetValue", message = "radio")
-  session$sendCustomMessage(type = "resetValue", message = "status")
+  session$sendCustomMessage(type = "resetValue", message = "value_qa")
+  session$sendCustomMessage(type = "resetValue", message = "time_qa")
+  session$sendCustomMessage(type = "resetValue", message = "time_unit_qa")
+  session$sendCustomMessage(type = "resetValue", message = "radio_qa")
+  session$sendCustomMessage(type = "resetValue", message = "checkbox_qa")
 
   removeUI(selector = "div#uiInput1",immediate = TRUE)
   insertUI(selector = "div#uiInput2",where = "beforeBegin",
