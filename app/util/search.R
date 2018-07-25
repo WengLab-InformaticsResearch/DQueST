@@ -132,7 +132,7 @@ searchByState = function(geoDt,s){
            finally = print("search by state finished"))
   return(geoDt)
 }
-searchByGeo = function(geoDt,country,state){
+searchByGeo = function(geoDt,country,state = NULL){
   if(dim(geoDt)[1] < 1){
     return(geoDt)
   }

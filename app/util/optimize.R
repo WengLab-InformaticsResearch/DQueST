@@ -1,6 +1,6 @@
 library(dplyr)
 findConcept = function(wMatrix,asked_concept_id){
-  print(paste0('--trial number: ',wMatrix %>% pull(nct_id) %>% unique() %>% length()))
+  # print(paste0('--trial number: ',wMatrix %>% pull(nct_id) %>% unique() %>% length()))
   # find best concept
   idx = NULL
   # randomly pick a concept_id
@@ -26,8 +26,8 @@ findConcept = function(wMatrix,asked_concept_id){
   
   
     
-  tryCatch(expr = {1},
-           error = function(e) e,
-           finally = print("find best concept"))
+  # tryCatch(expr = {1},
+  #          error = function(e) e,
+  #          finally = print("find best concept"))
   return(idx)
 }

@@ -285,7 +285,7 @@ server <- function(input, output, session) {
         answer = NULL
       } else{
         # standardize the answer.
-        answer = formAnswer(input, session)
+        answer = formAnswer(input)
       }
       # update the wMatrix_tmp.
       react$wMatrix_tmp = updateWMatrix(

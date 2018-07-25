@@ -1,4 +1,4 @@
-formAnswer = function(input,session){
+formAnswer = function(input){
   answer = NULL
   answer$exist = input$radio_qa
   answer$status = input$status_qa
@@ -12,10 +12,11 @@ convert2day = function(time, unit) {
   if(!is.null(time)){
     days = switch(
       unit,
-      "days" = time * 1,
-      "weeks" = time * 7,
-      "months" = time * 31,
-      "years" =  time * 365,
+      "day" = time * 1,
+      "week" = time * 7,
+      "month" = time * 31,
+      "year" =  time * 365,
+      "hour" = time * 1/24,
       NULL
     )
   }
