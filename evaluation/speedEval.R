@@ -11,7 +11,6 @@ sapply(file.sources, source, .GlobalEnv)
 # load data
 post_data = load_data()
 condition_fo_eval = c("Breast Cancer","Obesity","HIV Infections","Hypertension","Diabetes","Coronary Artery Disease","Depression","Alzheimer Disease","Asthma","Rheumatoid Arthritis")
-condition_fo_eval_abb = c("BRCA","OBESE","HIV","HTN","DM","CAD","DEPR","AD","ATHM","RA")
 
 # initialize
 # define input
@@ -40,7 +39,7 @@ for(condition in condition_fo_eval){
   speed_stat = tibble(seq = integer(), trial_length = integer(),iter = integer())
   
   # start qa process.
-  for(iter in c(1:10)){
+  for(iter in c(1:100)){
     print(iter)
     common_concept_id = NULL
     asked_concept_id = NULL
@@ -132,13 +131,24 @@ for(condition in condition_fo_eval){
   speed_stat_10condition[[condition]] = speed_stat
 }
 
+setwd('~/Projects/eqacts/evaluation/')
+base::save(speed_stat_10condition, file = "speed_stat_10condition.rda")
+
+load('speed_stat_10condition.rda')
 library(ggplot2)
 df = do.call("rbind", speed_stat_10condition)
+condition_fo_eval_abb = c("BRCA","OBESE","HIV","HTN","DM","CAD","DEPR","AD","ATHM","RA")
 df = df %>% mutate(condition = rep(condition_fo_eval_abb,each=dim(df)[1]/10))
 df_plot = df %>% group_by(condition,iter) %>% mutate(orig_length = max(trial_length)) %>% mutate(remove_percentage = 1-(trial_length/orig_length))
-df_plot = df_plot %>% group_by(condition,seq) %>% summarise(mean_remove_percentage = mean(remove_percentage))
-p = df_plot %>% ggplot(aes(x = seq,y = mean_remove_percentage,group=factor(condition),color=factor(condition))) +
-  geom_line()
-p
+df_plot = df_plot %>% ungroup() %>% mutate(condition = as.factor(paste0(condition," (",orig_length,")")))
 
+df_plot = df_plot %>% group_by(condition,seq) %>% summarise(mean_remove_percentage = mean(remove_percentage))
+
+p = df_plot %>% ggplot(aes(x = seq,y = mean_remove_percentage,group=factor(condition),color=condition)) +
+  geom_line() + 
+  xlab('number of questions answered') +
+  ylab('average percent of trials filtered out') +
+  scale_y_continuous(limits = c(0, 0.9))
+p = p + theme_bw()
+p
             
