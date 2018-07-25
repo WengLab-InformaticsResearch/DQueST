@@ -1,35 +1,48 @@
+rm(list=ls())
+setwd("~/Projects/eqacts/tools/")
 library(data.table)
 library(dplyr)
-source("removeConflictCriteria.R")
-source("reFormatParsedDt.R")
-source("removeIncOnlyTrial.R")
-# import structured ec table.
-# ec table is provided by Chi
-# and then parsed by PyCode
-dt = fread(file = '../resource/ec_parsed_matrix_v3.txt',sep = "\t",nThread = 4,
-           header = F,stringsAsFactors = F,
-           fill = T,showProgress = T,
-           na.strings = c("no_temporal","no_value",'NA'))
-# dt %>% pull(V1) %>% unique() %>% length()
-# dt = removeIncOnlyTrial(dt)
-# dt %>% pull(V1) %>% unique() %>% length()
-dt[V3=='pregnant' & V2=='INC' & V5==FALSE]
-dt[V3=='pregnant' & V2=='INC' & V5==TRUE]
-dt[V3=='pregnant' & V2=='EXC' & V5==FALSE]
-dt[V3=='pregnant' & V2=='EXC' & V5==TRUE]
+source("ieFormat.R")
+source("conceptFormat.R")
+source("knowledgeFormat.R")
 
-# colnames(dt) = c('cid','nct_id','ie_flag','term','domain','negation','temporal','value','temporal_min','temporal_max','temporal_unit','value_min','value_max','value_unit')
 
-dt %>% group_by(V1) %>% filter(V2 %in% 'INC') %>% summarise(inclusion_n = n()) %>% pull(V1) %>% unique() %>% length()
-dt %>% group_by(V1) %>% filter(V2 %in% 'EXC') %>% summarise(inclusion_n = n()) %>% pull(V1) %>% unique() %>% length()
+# step 0: parse value and temporal using python PyCode/numericParse.py
 
-dt = removeIncOnlyTrial(dt)
-dt = reFormatParsedDt(dt)
-dt = addConceptMapping(dt)
-dt = removeConflictCriteria(dt)
+# step 1: clean and format ie matrix.
+ie_result = fread("../resource/information_retrieval_results_plus.txt",sep = "\t",header = F,stringsAsFactors = F,fill = T,showProgress = T,nThread = 4,na.strings = c("no_temporal","no_value",'NA'))
+dim(ie_result) # 5107074
+ie_result = removeIncOnlyTrial(ie_result)
+dim(ie_result) # 4482721
+ie_result = reFormatParsedDt(ie_result)
+dim(ie_result) # 4482721
+ie_result = addStatus(ie_result)
+dim(ie_result) # 4482721
 
-fwrite(x = knowledgeBase, file = '../resource/knowledgeBase.csv',nThread = 4)
-save(knowledgeBase,file = '../resource/knowledgeBase.rda')
-knowledgeBase_small = knowledgeBase[,.(nct_id,ie_flag,domain,temporal_min,temporal_max,value_min,value_max,value_unit,mapping_term,mapping_score,omop_id,common_omop_id,common_omop_name)]
-fwrite(x = knowledgeBase_small, file = '../resource/knowledgeBase_small.csv',nThread = 4)
-save(knowledgeBase_small,file = '../resource/knowledgeBase_small.rda')
+# step 2: add omop concept.
+cm_result = fread("../resource/concept_mapping_results.txt",sep = "\t",header = F,stringsAsFactors = F,fill = T,showProgress = T,nThread = 4)
+dim(cm_result) # 616870
+knowledge_base = addConceptMapping(ie_result = ie_result,cm_result = cm_result)
+dim(knowledge_base) # 3673847
+
+# step 3: postprocess knowledgebase
+knowledge_base = removeNonValueMeasurement(knowledge_base)
+dim(knowledge_base) # 3409717
+knowledge_base = removeConflictCriteria(knowledge_base)
+dim(knowledge_base) # 3105624
+
+# step 4: output knowledgebase.
+outputKnowledgeBase(knowledge_base)
+
+
+
+# ie_result[V3=='pregnant' & V2=='INC' & V5==FALSE]
+# ie_result[V3=='pregnant' & V2=='INC' & V5==TRUE]
+# ie_result[V3=='pregnant' & V2=='EXC' & V5==FALSE]
+# ie_result[V3=='pregnant' & V2=='EXC' & V5==TRUE]
+# 
+# 
+# dt %>% group_by(V1) %>% filter(V2 %in% 'INC') %>% summarise(inclusion_n = n()) %>% pull(V1) %>% unique() %>% length()
+# dt %>% group_by(V1) %>% filter(V2 %in% 'EXC') %>% summarise(inclusion_n = n()) %>% pull(V1) %>% unique() %>% length()
+
+

@@ -7,9 +7,9 @@ library(shinyBS)
 # devtools::install_github("AnalytixWare/ShinySky")
 library(shinysky)
 library(R.utils)
-sourceDirectory("~/Projects/eqacts/app/util")
+sourceDirectory("./util")
 file.sources = list.files(
-  c("~/Projects/eqacts/app/util"),
+  c("./util"),
   pattern = "*.R$",
   full.names = TRUE,
   ignore.case = TRUE
@@ -111,6 +111,7 @@ ui <- navbarPage(
       class = "btn-secondary"
     ),
     h4("Search results:"),
+    wellPanel(DT::dataTableOutput(outputId = "trial_info_removal")),
     wellPanel(DT::dataTableOutput(outputId = "trial_info"))
   ),
   tabPanel(
@@ -302,6 +303,8 @@ server <- function(input, output, session) {
       # print(paste0('--trial updated # in knowledgebase + search results:',length(nct3)))
       # 
       react$trialSet_tmp = setdiff(nct3, setdiff(nct2, nct1))
+      # render removed trial table
+      output$trial_info_removal = renderTrialInfo(setdiff(nct2, nct1), post_data$trialDt, session)
       # render trial table
       output$trial_info = renderTrialInfo(react$trialSet_tmp, post_data$trialDt, session)
       # go to the trial tab when clicking the button

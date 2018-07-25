@@ -1,32 +1,37 @@
-### _demographicXmlParsed.R and files start with _
-------------------------------------------------
-- deprecated scripts
-------------------------------------------------
+##########
+README
+##########
+- this file
 
-### conceptClusterOmop.R
-------------------------------------------------
-- core function for clustering
-------------------------------------------------
+##########
+/archive
+##########
+- deprecated functions.
 
-### nlpPostProcess.R
-------------------------------------------------
+##########
+conceptFormat.R
+##########
+- function for concept mapping and clustering
+
+##########
+nlpPostProcess.R.R
+##########
 - core function to generate knowledgeBase
-------------------------------------------------
 
-### PyCode
-------------------------------------------------
+
+##########
+/PyCode
+##########
 - Python code to parse the xml files.
 - numericParse.py parse numeric to \d to \d for temporal and value
-------------------------------------------------
 
-### removeConflictCriteria.R
-------------------------------------------------
-- remove conflict (e.g. negated in both inclusion or exclusion)
-- To be implemented.
-------------------------------------------------
+##########
+ieFormat.R
+##########
+- parse and format ie results from Chiyuan.
 
-### addConceptMapping.R
-------------------------------------------------
-- adding the concept mapping and mapping result to dt.
+##########
+knowledgeFormat.R
+##########
+- remove conflict knowledge
 - output final knowledge base
-------------------------------------------------

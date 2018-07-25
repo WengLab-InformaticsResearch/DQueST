@@ -168,13 +168,13 @@ def parse_temporal(temporal):
 
 
 if __name__ == '__main__':
-    o = open('../../resource/ec_parsed_matrix_parsed.csv','w+')
-    with open('../../resource/ec_parsed_matrix_v3.csv') as f:
+    o = open('../../resource/information_retrieval_results_plus.txt','w+')
+    with open('../../resource/information_retrieval_results.txt') as f:
         for line in f:
             fields = line.rstrip().split('\t')
-            temporal = fields[6]
+            temporal = fields[5]
             temporal_parsed = parse_temporal(temporal)
-            value = fields[7]
+            value = fields[6]
             value_parsed = parse_value(value)
             row_append = line.rstrip() + '\t' + '\t'.join(temporal_parsed) + '\t' + '\t'.join(value_parsed) + '\n'
             # print(row_append)
