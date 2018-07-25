@@ -9,7 +9,7 @@ shiny::runApp('app')
 ### Prerequisites
 1. packrat_0.4.9-2 is used for external R package management. 
 2. init wMatrix required API, file or rda input.
-- The model is to over 20mb to upload to github
+-- The model is too big (>20mb) to upload to github
 
 ### Installing
 1. install all required R package
