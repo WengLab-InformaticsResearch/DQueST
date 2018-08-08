@@ -69,7 +69,7 @@ def parse_temporal(temporal):
     temporal = temporal.lower()
     current_words = ["now","current","ongoing","present","simultaneous","undergoing","recent","concomitant"]
     bigger_words = ["lease","\>","≥","\+","x","more","big","great","more","excess","high","better","exceed","old","long","beyond"]
-    smaller_words = ["most","\<","≤","\-","less","small","low","worse","young","short","within","last","past"]
+    smaller_words = ["most","\<","≤","\-","less","small","low","worse","young","short","within","last","past","before"]
     and_words = ["-",'to',"and"]
     unit = ['hr',"hour","day","wks","week","mon","month","year","yr"]
     time2days = {'hr':'hour','hour':'hour','day':'day','wks':'week','week':'week','mon':'month','month':'month','year':'year','yr':'year'}
@@ -126,8 +126,12 @@ def parse_temporal(temporal):
         for p in [p1,p2]:
             m = p.match(temporal)
             if(m):
-                min_value = m.group(1)
-                max_value = '+Inf'
+                # change by Cong Liu
+                # e.g. more than 5 years
+                # min = -Inf
+                # max = -5
+                min_value = '-Inf'
+                max_value = '-'+m.group(1)
                 value_unit = m.group(2)
                 value_unit = value_unit.strip()
                 if len(value_unit.split()) == 1:
@@ -136,7 +140,8 @@ def parse_temporal(temporal):
                     if(m):
                         value_unit = time2days[m.group(1)]
                         rate = rate2days[value_unit]
-                        min_value = str(int(float(min_value) * rate))
+                        if min_value != '-Inf':
+                            min_value = str(int(float(min_value) * rate))
                         return([min_value,max_value,value_unit])
         
     for aw in smaller_words:
@@ -148,8 +153,12 @@ def parse_temporal(temporal):
         for p in [p1,p2]:
             m = p.match(temporal)
             if(m):
-                min_value = '-Inf'
-                max_value = m.group(1)
+                # changed by Cong Liu 
+                # e.g. within 5 years
+                # min = -5
+                # max = 0
+                min_value = '-'+m.group(1)
+                max_value = 0
                 value_unit = m.group(2)
                 value_unit = value_unit.strip()
                 if len(value_unit.split()) == 1:
