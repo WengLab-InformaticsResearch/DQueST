@@ -1,13 +1,14 @@
+Sys.setenv(http_proxy="http://bcp3.cumc.columbia.edu:8080")
 rm(list = ls())
-setwd('~/Projects/eqacts/app/')
+# setwd('~/Projects/eqacts/app/')
 library(shiny)
 library(shinyjs)
 library(shinyBS)
 # library("devtools")
 # devtools::install_github("AnalytixWare/ShinySky")
 library(shinysky)
-library(R.utils)
-sourceDirectory("./util")
+# library(R.utils)
+# sourceDirectory("./util")
 file.sources = list.files(
   c("./util"),
   pattern = "*.R$",
@@ -41,7 +42,7 @@ ui <- navbarPage(
         label = "Enter condition to search",
         choices = c(post_data$conditionChoices),
         type = c("input", "select"),
-        multiple=TRUE
+        multiple=FALSE
       ),
       
       numericInput(
@@ -110,7 +111,10 @@ ui <- navbarPage(
       label = "Restart",
       class = "btn-secondary"
     ),
+    br(),
+    textOutput("count"),
     h4("Search results:"),
+    br(),
     wellPanel(DT::dataTableOutput(outputId = "trial_info_removal")),
     wellPanel(DT::dataTableOutput(outputId = "trial_info"))
   ),
@@ -164,6 +168,9 @@ server <- function(input, output, session) {
     common_concept_id = NULL,
     asked_concept_id = NULL
   )
+  
+  #init question count.
+  counter <- reactiveValues(countervalue = 0)
   
   # update state selection
   observe({
@@ -243,6 +250,7 @@ server <- function(input, output, session) {
   # event restart button
   observeEvent(input$restart, {
     refreshAll(session)
+    counter$countervalue <- 0
   })
   
   # event continue button
@@ -250,6 +258,7 @@ server <- function(input, output, session) {
     req(react$trialSet_tmp)
     if (dim(react$wMatrix_tmp)[1] > 0 &
         length(react$trialSet_tmp) > 0) {
+      
       # confirm the update or search results
       react$wMatrix = react$wMatrix_tmp
       
@@ -268,6 +277,13 @@ server <- function(input, output, session) {
       # renderAnswer(session)
       # render question
       renderQuestion(question, session)
+      # update count.
+      if (length(input$skip) > 0) {
+        if(input$skip == FALSE){
+          counter$countervalue <- counter$countervalue + 1
+        }
+      }
+      
       # go to the search tab when clicking the button
       # updateTabsetPanel(session, inputId = "navbar", selected = "qa")
     } else{
@@ -312,6 +328,11 @@ server <- function(input, output, session) {
     } else{
       showNotification("All trials have been filtered out.")
     }
+  })
+  
+  # output count.
+  output$count <- renderText({
+    paste("question answered is ", counter$countervalue)   # print the latest value stored in the reactiveValues object
   })
 }
 

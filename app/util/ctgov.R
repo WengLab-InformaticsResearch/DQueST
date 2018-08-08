@@ -10,6 +10,9 @@ get_nct_by_advanced = function(param) {
 
 get_nct_by_term = function(term) {
   nct_id_list = NULL
+  if(length(term) > 1){
+    term = paste(x,collapse=" ")
+  }
   tryCatch({
     url = paste0('https://clinicaltrials.gov/ct2/results?cond=',
                  term,

@@ -4,7 +4,9 @@ renderTrialInfo = function(trialSet,trialDt,session,number = 999999){
   data = trialDt[nct_id %in% trialSet] %>% head(n=number)
   data[,nct_id:=paste0('<a target="_blank" href="https://clinicaltrials.gov/ct2/show/',nct_id,'">',nct_id,'</a>')]
   data[,V1:=NULL]
-
+  # shuffle the rows.
+  data = data[,.SD[sample(.N)]]
+  
   # dt = DT::datatable(data = data,options = list(
   #   scrollY = 200,
   #   scroller = TRUE,

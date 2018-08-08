@@ -20,7 +20,7 @@ ie_result = addStatus(ie_result)
 dim(ie_result) # 4482721
 
 # step 2: add omop concept.
-cm_result = fread("../resource/concept_mapping_results.txt",sep = "\t",header = F,stringsAsFactors = F,fill = T,showProgress = T,nThread = 4)
+cm_result = fread("../resource/archive/concept_mapping_result_v3.txt",sep = "\t",header = F,stringsAsFactors = F,fill = T,showProgress = T,quote = "")
 dim(cm_result) # 616870
 knowledge_base = addConceptMapping(ie_result = ie_result,cm_result = cm_result)
 dim(knowledge_base) # 3673847

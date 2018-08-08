@@ -2,8 +2,18 @@ formAnswer = function(input){
   answer = NULL
   answer$exist = input$radio_qa
   answer$status = input$status_qa
-  answer$value = input$value_qa
-  answer$time = convert2day(input$time_qa,input$time_unit_qa)
+  if(!is.numeric(input$value_qa)){
+    answer$value = -1
+    showNotification("Your enter for value is not numeric, change to -1.")
+  }else{
+    answer$value = input$value_qa
+  }
+  if(!is.numeric(answer$time)){
+    answer$time = -1
+  }else{
+    answer$time = convert2day(input$time_qa,input$time_unit_qa)
+    showNotification("Your enter for value is not numeric, change to -1.")
+  }
   return(answer)
 }
 
