@@ -15,6 +15,7 @@ test
 tools/ohdsiConnection.R
 app/model/
 app/rsconnect
+knowledgeBaseAnalysis/
 
 packrat/
 packrat/lib*/
