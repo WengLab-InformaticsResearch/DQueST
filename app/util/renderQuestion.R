@@ -2,14 +2,14 @@ renderQuestion = function(question,session){
   domain = question$domain
   renderQuestionDomain(question,domain)
   insertUI(
-    selector = "#placeholder1",
+    selector = "#placeholder3",
     where = "beforeBegin",
     checkboxInput(inputId = "skip",
                   label = "skip this question"),
     immediate = TRUE
   )
   insertUI(
-    selector = "#placeholder1",
+    selector = "#placeholder3",
     where = "beforeBegin",
     actionButton(
       inputId = "update",
@@ -58,13 +58,13 @@ renderQuestionCondition = function(question) {
   choice1 = question$s1_choice = c("YES", "NO")
   insertRatioButtons(label1, choice1)
   label2 = question$s2
-  choice2 = question$s2_numeric
-  insertTimeInput(label2)
-  if (!is.na(question$s3)) {
-    label3 = question$s3
-    choice3 = question$s3_choice
-    insertCheckboxGroupInput(label3, choice3)
-  }
+  label3 = question$s3
+  insertTimeInput(label2,label3)
+  # if (!is.na(question$s3)) {
+  #   label3 = question$s3
+  #   choice3 = question$s3_choice
+  #   insertCheckboxGroupInput(label3, choice3)
+  # }
   return(NULL)
 }
 
@@ -73,7 +73,6 @@ renderQuestionProcedure = function(question) {
   choice1 = question$s1_choice = c("YES", "NO")
   insertRatioButtons(label1, choice1)
   label2 = question$s2
-  choice2 = question$s2_numeric
   insertTimeInput(label2)
   return(NULL)
 }
@@ -90,8 +89,8 @@ renderQuestionDrug = function(question) {
   choice1 = question$s1_choice = c("YES", "NO")
   insertRatioButtons(label1, choice1)
   label2 = question$s2
-  choice2 = question$s2_numeric
-  insertTimeInput(label2)
+  label3 = question$s3
+  insertTimeInput(label2,label3)
   return(NULL)
 }
 
@@ -99,6 +98,9 @@ renderQuestionObservation = function(question) {
   label1 = question$s1
   choice1 = question$s1_choice = c("YES", "NO")
   insertRatioButtons(label1, choice1)
+  label2 = question$s2
+  label3 = question$s3
+  insertTimeInput2(label2,label3)
   return(NULL)
 }
 
@@ -109,7 +111,8 @@ insertRatioButtons <- function(label, choices) {
     radioButtons(
       inputId = "radio_qa",
       label = label,
-      choices = choices
+      choices = choices,
+      selected = 'NO'
     ),
     immediate = TRUE
   )
@@ -144,26 +147,77 @@ insertNumericInput <- function(label) {
   return(NULL)
 }
 
-insertTimeInput = function(label) {
-  insertUI(
-    selector = "#placeholder1",
-    where = "beforeBegin",
-    tags$div(tags$label(label),
-             fluidRow(
-               column(6,
-                      numericInput(
-                        inputId = "time_qa",
-                        label = '',
-                        value = -1
-                      )),
-               column(6,
-                      selectInput(
-                        inputId = "time_unit_qa",
-                        label = '',
-                        choices = c("days", "weeks", "months", "years")
-                      ))
-             )),
-    immediate = TRUE
-  )
+insertTimeInput = function(label, label2 = NULL) {
+  if (is.null(label2)) {
+    insertUI(
+      selector = "#placeholder1",
+      where = "beforeBegin",
+      tags$div(id = "time",
+               tags$label(label),
+               fluidRow(
+                 column(6,
+                        numericInput(
+                          inputId = "time_qa",
+                          label = '',
+                          value = -1
+                        )),
+                 column(
+                   6,
+                   selectInput(
+                     inputId = "time_unit_qa",
+                     label = '',
+                     choices = c("days", "weeks", "months", "years")
+                   )
+                 )
+               )),
+      immediate = TRUE
+    )
+  }
+  else{
+    insertUI(
+      selector = "#placeholder1",
+      where = "beforeBegin",
+      tags$div(
+        id = "time",
+        tags$label(label),
+        fluidRow(column(
+          6,
+          numericInput(
+            inputId = "time_qa",
+            label = '',
+            value = -1
+          )
+        ),
+        column(
+          6,
+          selectInput(
+            inputId = "time_unit_qa",
+            label = '',
+            choices = c("days", "weeks", "months", "years")
+          )
+        )),
+        tags$label(label2),
+        fluidRow(column(
+          6,
+          numericInput(
+            inputId = "time_qa2",
+            label = '',
+            value = -1
+          )
+        ),
+        column(
+          6,
+          selectInput(
+            inputId = "time_unit_qa2",
+            label = '',
+            choices = c("days", "weeks", "months", "years")
+          )
+        )),
+        immediate = TRUE
+      )
+    )
+  }
+  
   return(NULL)
 }
+

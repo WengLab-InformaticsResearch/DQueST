@@ -100,23 +100,23 @@ removeTrial = function(relatedTrialsWMatrixAdd, speed) {
 
 removeTrialsCondition = function(relatedTrialsWMatrix, answer, speed) {
   if (is.null(answer$status) &
-      is.null(answer$time)) {
+      length(answer$time) == 0) {
     # no status or temporal
     relatedTrialsWMatrixAdd = relatedTrialsWMatrix %>%
       mutate(match = (answer$exist == "YES"))
   }
   
-  if (is.null(answer$status) & !is.null(answer$time)) {
+  if (is.null(answer$status) & length(answer$time) > 0) {
     # no status
     relatedTrialsWMatrixAdd = relatedTrialsWMatrix %>%
       mutate(match = (
         answer$exist == "YES" &
-          (is.na(temporal_min) | temporal_min < answer$time) &
-          (is.na(temporal_max) | temporal_max > answer$time)
+          (is.na(temporal_min) | temporal_min < answer$time$time2) &
+          (is.na(temporal_max) | temporal_max > answer$time$time1)
       ))
   }
   
-  if (is.null(answer$time) & !is.null(answer$status)) {
+  if (length(answer$time) == 0 & !is.null(answer$status)) {
     # no temporal
     relatedTrialsWMatrixAdd = relatedTrialsWMatrix %>%
       mutate(match = (answer$exist == "YES" &
@@ -125,12 +125,12 @@ removeTrialsCondition = function(relatedTrialsWMatrix, answer, speed) {
                         )))
   }
   
-  if (!is.null(answer$time) & !is.null(answer$status)) {
+  if (length(answer$time) > 0 & !is.null(answer$status)) {
     relatedTrialsWMatrixAdd = relatedTrialsWMatrix %>%
       mutate(match = (
         answer$exist == "YES" &
-          (is.na(temporal_min) | temporal_min < answer$time) &
-          (is.na(temporal_max) | temporal_max > answer$time) &
+          (is.na(temporal_min) | temporal_min < answer$time$time2) &
+          (is.na(temporal_max) | temporal_max > answer$time$time1) &
           (is.na(status) | status %in% answer$status)
       ))
   }
@@ -140,8 +140,18 @@ removeTrialsCondition = function(relatedTrialsWMatrix, answer, speed) {
 }
 
 removeTrialsObservation = function(relatedTrialsWMatrix, answer, speed) {
-  relatedTrialsWMatrixAdd = relatedTrialsWMatrix %>%
-    mutate(match = (answer$exist == "YES"))
+  if(length(answer$time) == 0){
+    # no temp.
+    relatedTrialsWMatrixAdd = relatedTrialsWMatrix %>%
+      mutate(match = (answer$exist == "YES"))
+  }else{
+    relatedTrialsWMatrixAdd = relatedTrialsWMatrix %>%
+      mutate(match = (
+        answer$exist == "YES" &
+          (is.na(temporal_min) | temporal_min < answer$time$time2) &
+          (is.na(temporal_max) | temporal_max > answer$time$time1)
+      ))
+  }
   trialsRemoved = removeTrial(relatedTrialsWMatrixAdd, speed)
   return(trialsRemoved)
 }
@@ -158,35 +168,35 @@ removeTrialsMeasurement = function(relatedTrialsWMatrix, answer, speed) {
 }
 
 removeTrialsProcedure = function(relatedTrialsWMatrix, answer, speed) {
-  if (is.null(answer$time)) {
+  if(length(answer$time) == 0){
+    # no temp.
     relatedTrialsWMatrixAdd = relatedTrialsWMatrix %>%
-      mutate(match = answer$exist == "YES")
-  } else{
+      mutate(match = (answer$exist == "YES"))
+  }else{
     relatedTrialsWMatrixAdd = relatedTrialsWMatrix %>%
       mutate(match = (
         answer$exist == "YES" &
-          (is.na(temporal_min) | temporal_min < answer$time) &
-          (is.na(temporal_max) | temporal_max > answer$time)
+          (is.na(temporal_min) | temporal_min < answer$time$time1) &
+          (is.na(temporal_max) | temporal_max > answer$time$time1)
       ))
   }
-  
   trialsRemoved = removeTrial(relatedTrialsWMatrixAdd, speed)
   return(trialsRemoved)
 }
 
 removeTrialsDrug = function(relatedTrialsWMatrix, answer, speed) {
-  if (is.null(answer$time)) {
+  if(length(answer$time) == 0){
+    # no temp.
     relatedTrialsWMatrixAdd = relatedTrialsWMatrix %>%
-      mutate(match = answer$exist == "YES")
-  } else{
+      mutate(match = (answer$exist == "YES"))
+  }else{
     relatedTrialsWMatrixAdd = relatedTrialsWMatrix %>%
       mutate(match = (
         answer$exist == "YES" &
-          (is.na(temporal_min) | temporal_min < answer$time) &
-          (is.na(temporal_max) | temporal_max > answer$time)
+          (is.na(temporal_min) | temporal_min < answer$time$time2) &
+          (is.na(temporal_max) | temporal_max > answer$time$time1)
       ))
   }
-  
   trialsRemoved = removeTrial(relatedTrialsWMatrixAdd, speed)
   return(trialsRemoved)
 }

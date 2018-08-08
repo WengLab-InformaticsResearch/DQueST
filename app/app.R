@@ -89,12 +89,15 @@ ui <- navbarPage(
     value = "trials",
     
     h4("You can search by answering the questions"),
-    wellPanel(fluidRow(column(
-      12, tags$div(id = "uiInput1", tags$div(id = "placeholder1"))
-    )),
-    fluidRow(column(
-      12, tags$div(id = "uiInput2", tags$div(id = "placeholder2"))
+    wellPanel(fluidRow(column(12, tags$div(
+      id = "uiInput1", tags$div(id = "placeholder1")
     ))),
+    fluidRow(column(12, tags$div(
+      id = "uiInput2", tags$div(id = "placeholder2")
+    ))),
+    fluidRow(column(12, tags$div(
+      id = "uiInput3", tags$div(id = "placeholder3")
+    )))), 
     checkboxInput(
       inputId = "speed",
       label = "Fast Filtering",
@@ -109,7 +112,7 @@ ui <- navbarPage(
     actionButton(
       inputId = "restart",
       label = "Restart",
-      class = "btn-secondary"
+      class = "btn-danger"
     ),
     br(),
     textOutput("count"),
@@ -292,6 +295,24 @@ server <- function(input, output, session) {
     
   })
   
+  # dynamic ui within questions.
+  # there is a bug.
+  # sometimes user has to click no and then yes to show time.
+  observe({
+    if(!is.null(input$radio_qa)){
+      if(input$radio_qa == "YES"){
+        print("YES")
+        shinyjs::show("time")
+      }else{
+        print("NO")
+        shinyjs::hide("time")
+      }
+    }else{
+      print("NULL")
+      shinyjs::hide("time")
+    }
+  })
+  
   # event update button
   observeEvent(input$update, {
     req(react$wMatrix, react$common_concept_id)
@@ -334,6 +355,8 @@ server <- function(input, output, session) {
   output$count <- renderText({
     paste("question answered is ", counter$countervalue)   # print the latest value stored in the reactiveValues object
   })
+  
 }
 
 shinyApp(ui = ui, server = server)
+

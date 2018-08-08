@@ -51,16 +51,19 @@ questionGetCondition = function(subWMatrix){
   status = subWMatrix %>% filter(!is.na(status)) %>% pull(status) %>% unique()
   
   # temporal
-  question$s2 = paste("How long since you had the condition ?")
+  question$s2 = paste("How long since you latest diagnoisis of the condition ? (answer = 0 if you are experiencing it now.)")
   question$s2_numeric = TRUE
   
-  if(length(status)>0){
-    question$s3_choice = c(status)
-    question$s3 = paste("Check your condition status")
-  }else{
-    question$s3 = NA
-    question$s3_choice = NA
-  }
+  question$s3 = paste("How long since your initial diagnosis of the condition ?")
+  question$s3_numeric = TRUE
+  
+  # if(length(status)>0){
+  #   question$s3_choice = c(status)
+  #   question$s3 = paste("Check your condition status")
+  # }else{
+  #   question$s3 = NA
+  #   question$s3_choice = NA
+  # }
   # no numeric for condition
   return(question)
 }
@@ -73,7 +76,7 @@ questionGetProcedure = function(subWMatrix){
   question$s1_choice = c("YES","NO")
 
   # temporal
-  question$s2 = paste("If yes, how long since you had the procedure ?")
+  question$s2 = paste("How long since you have had the latest procedure ?")
   question$s2_numeric = TRUE
   
   # no numeric and status for procedure.
@@ -99,8 +102,11 @@ questionGetDrug = function(subWMatrix){
   question$s1_choice = c("YES","NO")
   
   # temporal
-  question$s2 = paste("If yes, how long since you had the drug ?")
+  question$s2 = paste("How long since you latest taken of the medicine ? ")
   question$s2_numeric = TRUE
+  
+  question$s3 = paste("How long since your initial taken of the medicine ?")
+  question$s3_numeric = TRUE
   
   # no numeric and status for procedure.
   return(question)
@@ -114,6 +120,13 @@ questionGetObservation = function(subWMatrix){
   question$name = subWMatrix %>% pull(common_omop_name) %>% unique()
   question$s1 = paste("Do you have observation: ",question$name)
   question$s1_choice = c("YES","NO")
+  
+  # temporal
+  question$s2 = paste("How long since you latest observation of the event ? (answer = 0 if you are observing it now.)")
+  question$s2_numeric = TRUE
+  
+  question$s3 = paste("How long since your initial observation of the event ?")
+  question$s3_numeric = TRUE
   return(question)
 }
 
