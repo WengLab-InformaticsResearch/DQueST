@@ -140,8 +140,7 @@ def parse_temporal(temporal):
                     if(m):
                         value_unit = time2days[m.group(1)]
                         rate = rate2days[value_unit]
-                        if min_value != '-Inf':
-                            min_value = str(int(float(min_value) * rate))
+                        max_value = str(int(float(max_value) * rate))
                         return([min_value,max_value,value_unit])
         
     for aw in smaller_words:
@@ -158,7 +157,7 @@ def parse_temporal(temporal):
                 # min = -5
                 # max = 0
                 min_value = '-'+m.group(1)
-                max_value = 0
+                max_value = '0'
                 value_unit = m.group(2)
                 value_unit = value_unit.strip()
                 if len(value_unit.split()) == 1:
@@ -167,7 +166,7 @@ def parse_temporal(temporal):
                     if(m):
                         value_unit = time2days[m.group(1)]
                         rate = rate2days[value_unit]
-                        max_value = str(int(float(max_value) * rate))
+                        min_value = str(int(float(min_value) * rate))
                         return([min_value,max_value,value_unit])
     
     min_value = 'NA'

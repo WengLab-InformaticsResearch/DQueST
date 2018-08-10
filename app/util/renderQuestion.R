@@ -193,7 +193,7 @@ insertTimeInput = function(label, label2 = NULL) {
           selectInput(
             inputId = "time_unit_qa",
             label = '',
-            choices = c("days", "weeks", "months", "years")
+            choices = c("days", "weeks", "months", "years","hours")
           )
         )),
         tags$label(label2),
@@ -210,7 +210,7 @@ insertTimeInput = function(label, label2 = NULL) {
           selectInput(
             inputId = "time_unit_qa2",
             label = '',
-            choices = c("days", "weeks", "months", "years")
+            choices = c("days", "weeks", "months", "years","hours")
           )
         )),
         immediate = TRUE

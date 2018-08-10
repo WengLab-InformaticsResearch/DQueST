@@ -1,5 +1,9 @@
-# Sys.setenv(http_proxy="http://bcp3.cumc.columbia.edu:8080")
 rm(list = ls())
+# remove this two lines if not running on the server.
+##########################################
+Sys.setenv(http_proxy="http://bcp3.cumc.columbia.edu:8080")
+Sys.setenv(https_proxy="https://bcp3.cumc.columbia.edu:8080")
+##########################################
 # setwd('~/Projects/eqacts/app/')
 library(shiny)
 library(shinyjs)
@@ -118,7 +122,7 @@ ui <- navbarPage(
     textOutput("count"),
     h4("Search results:"),
     br(),
-    wellPanel(DT::dataTableOutput(outputId = "trial_info_removal")),
+    # wellPanel(DT::dataTableOutput(outputId = "trial_info_removal")),
     wellPanel(DT::dataTableOutput(outputId = "trial_info"))
   ),
   tabPanel(
