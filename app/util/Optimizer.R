@@ -1,4 +1,3 @@
-library(dplyr)
 findConcept = function(wMatrix,asked_concept_id){
   # print(paste0('--trial number: ',wMatrix %>% pull(nct_id) %>% unique() %>% length()))
   # find best concept
@@ -20,14 +19,5 @@ findConcept = function(wMatrix,asked_concept_id){
   
   idx= idx_tbl %>% pull(common_omop_id)
   score = idx_tbl %>% pull(es)
-  # print(paste0('--idx:',idx))
-  # print(paste0('--score:',score))
-  # print(paste0('--trial number:',wMatrix %>% filter(common_omop_id %in% idx) %>% pull(nct_id) %>% unique() %>% length()))
-  
-  
-    
-  # tryCatch(expr = {1},
-  #          error = function(e) e,
-  #          finally = print("find best concept"))
   return(idx)
 }

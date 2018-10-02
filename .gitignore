@@ -5,19 +5,14 @@
 .Rhistory
 README.md
 
-
-resource/
-resource/alltresults_c3.txt
 resource/*
 tools/PyCode/PyCode/*
 
 test
-tools/ohdsiConnection.R
 app/model/
 app/rsconnect
-knowledgeBaseAnalysis/
+evaluation
 
-packrat/
-packrat/lib*/
+packrat/*
 redcap/
 packrat/src/
