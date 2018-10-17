@@ -88,6 +88,7 @@ removeTrialsCondition = function(relatedTrialsWMatrix, answer) {
 removeTrialsObservation = removeTrialsCondition
 
 
+
 removeTrialsMeasurement = function(relatedTrialsWMatrix, answer) {
   if (!is.null(answer$value)) {
     relatedTrialsWMatrixAdd = relatedTrialsWMatrix %>%

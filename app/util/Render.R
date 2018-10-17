@@ -58,26 +58,26 @@ renderQuestionDomain = function(concept_name, domain) {
 }
 
 renderQuestionCondition = function(concept_name) {
-  label1 = paste0("Do you have ", concept_name, "?")
+  label1 = paste0("Have you had ", concept_name, "?")
   choice1 = c("Yes", "No", "I don't know")
   insertRatioButtons(label1, choice1)
-  label2 = paste0("what is your condition era ?")
+  label2 = paste0("When did you have this condition ?")
   insertTimeRangeInput(label2)
   return(NULL)
 }
 
 renderQuestionProcedure = function(concept_name) {
-  label1 = paste0("Do you undergo ", concept_name, "?")
+  label1 = paste0("Have you had ", concept_name, "?")
   choice1 = c("Yes", "No", "I don't know")
   insertRatioButtons(label1, choice1)
-  label2 = paste0("what is your procedure period ?")
+  label2 = paste0("When did you have this procedure ?")
   insertTimeRangeInput(label2)
   return(NULL)
 }
 
 renderQuestionMeasurement = function(concept_name, major_value_unit = "mvu") {
   if (!is.na(major_value_unit)) {
-    label1 = paste0("What is your latest",
+    label1 = paste0("What is your latest ",
                     concept_name,
                     " (",
                     major_value_unit,
@@ -90,19 +90,19 @@ renderQuestionMeasurement = function(concept_name, major_value_unit = "mvu") {
 }
 
 renderQuestionDrug = function(concept_name) {
-  label1 = paste0("Have you taken", concept_name, "?")
+  label1 = paste0("Have you taken ", concept_name, "?")
   choice1 = c("Yes", "No", "I don't know")
   insertRatioButtons(label1, choice1)
-  label2 = paste0("what is your drug era ?")
+  label2 = paste0("When did you take this drug ?")
   insertTimeRangeInput(label2)
   return(NULL)
 }
 
 renderQuestionObservation = function(concept_name) {
-  label1 = paste0("Have you have", concept_name, "?")
+  label1 = paste0("Have you had ", concept_name, "?")
   choice1 = c("Yes", "No", "I don't know")
   insertRatioButtons(label1, choice1)
-  label2 = paste0("what is your observation period ?")
+  label2 = paste0("When did you have this observation ?")
   insertTimeRangeInput(label2)
   return(NULL)
 }
