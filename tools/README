@@ -23,7 +23,7 @@ nlpPostProcess.R.R
 /PyCode
 ##########
 - Python code to parse the xml files.
-- numericParse.py parse numeric to \d to \d for temporal and value
+- ie_parser.py is used to parse temporal and numeric values.
 
 ##########
 ieFormat.R
