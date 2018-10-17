@@ -7,7 +7,7 @@ source("conceptFormat.R")
 source("knowledgeFormat.R")
 
 
-# step 0: parse value and temporal using python PyCode/numericParse.py
+# step 0: parse value and temporal using python PyCode/ie_parser.py
 
 # step 1: clean and format ie matrix.
 ie_result = fread("../resource/information_retrieval_results_plus.txt",sep = "\t",header = F,stringsAsFactors = F,fill = T,showProgress = T,nThread = 4,na.strings = c("no_temporal","no_value",'NA'))
@@ -35,14 +35,5 @@ dim(knowledge_base) # 3105624
 outputKnowledgeBase(knowledge_base)
 
 
-
-# ie_result[V3=='pregnant' & V2=='INC' & V5==FALSE]
-# ie_result[V3=='pregnant' & V2=='INC' & V5==TRUE]
-# ie_result[V3=='pregnant' & V2=='EXC' & V5==FALSE]
-# ie_result[V3=='pregnant' & V2=='EXC' & V5==TRUE]
-# 
-# 
-# dt %>% group_by(V1) %>% filter(V2 %in% 'INC') %>% summarise(inclusion_n = n()) %>% pull(V1) %>% unique() %>% length()
-# dt %>% group_by(V1) %>% filter(V2 %in% 'EXC') %>% summarise(inclusion_n = n()) %>% pull(V1) %>% unique() %>% length()
 
 
