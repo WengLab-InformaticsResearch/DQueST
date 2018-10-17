@@ -1,4 +1,4 @@
-# DQeST (Dynamic Questionnaire for Personalized Search of Clinical Trials )
+# DQueST (Dynamic Questionnaire for Personalized Search of Clinical Trials )
 DQeST project includes an R package for question sequence optimization based on the frequency and accuracy of eligibility criteria to OMOP concept mapping.
 
 ## Prerequisites
@@ -6,7 +6,7 @@ DQeST project includes an R package for question sequence optimization based on 
 ```
 packrat::unbundle(bundle="testproject-2014-07-15.tar.gz", where="/home/bob/projects")
 ```
-2. pre-generated model app/model/knowledgedBase.rda, app/model/TRIAL_INFO.rda and app/model/titleDt.csv
+2. pre-generated model app/model/knowledgedBase.rda (optional, app/model/TRIAL_INFO.rda and app/model/titleDt.csv if connect to CT.gov on fly)
 -- The model files are too big (>20mb) to upload to github
 3. resource/AACT_LOGIN contains connection information to AACT (https://www.ctti-clinicaltrials.org/aact-database) database
 -- registration required
