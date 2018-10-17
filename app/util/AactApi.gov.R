@@ -194,6 +194,4 @@ getTrialsBySearch = function(con,
   return(intesect_trials)
 }
 
-packrat::init('/Users/cl3720/Projects/DQeST/')
-packrat::bundle(project = "DQeST.Rproj",file = "~/Projects/DQeST/",overwrite = T)
 

@@ -100,8 +100,12 @@ def parse_temporal(temporal):
         p = re.compile('.*?'+ digit +'.*?' + aw + '.*?'+ digit +'(.*)')
         m = p.match(temporal)
         if(m):
-            min_value = m.group(1)
-            max_value = m.group(2)
+            # change by Cong Liu
+            # e.g. 3 to 5 years
+            # min = -5
+            # max = -3
+            min_value = '-' + m.group(2)
+            max_value = '-' + m.group(1)
             min_value = int(float(min_value))
             max_value = int(float(max_value))
             if(min_value < max_value):
@@ -169,9 +173,6 @@ def parse_temporal(temporal):
                         min_value = str(int(float(min_value) * rate))
                         return([min_value,max_value,value_unit])
     
-    min_value = 'NA'
-    max_value = 'NA'
-    value_unit = 'NA'
     return([min_value,max_value,value_unit])
 
 

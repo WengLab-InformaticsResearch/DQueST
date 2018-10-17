@@ -16,3 +16,4 @@ evaluation
 packrat/*
 redcap/
 packrat/src/
+packrat/lib*/
