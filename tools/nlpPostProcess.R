@@ -23,12 +23,12 @@ dim(ie_result) # 4482721
 # step 2: add omop concept.
 cm_result = fread("../resource/concept_mapping_results.txt",sep = "\t",header = F,stringsAsFactors = F,fill = T,showProgress = T,quote = "")
 dim(cm_result) # 616870
-knowledge_base = addConceptMapping(ie_result = ie_result,cm_result = cm_result)
-dim(knowledge_base) # 3673847
+ie_and_cm = addConceptMapping(ie_result = ie_result,cm_result = cm_result)
+dim(ie_and_cm) # 3673845
 
 # step 3: postprocess knowledgebase
 knowledge_base = removeNonValueMeasurement(knowledge_base)
-dim(knowledge_base) # 3409717
+dim(knowledge_base) # 3409715
 knowledge_base = removeConflictCriteria(knowledge_base)
 dim(knowledge_base) # 3105624
 

@@ -3,9 +3,19 @@ removeNonValueMeasurement = function(dt){
   return(dt)
 }
 
-removeConflictCriteria = function(dt){
-  dt = dt[dt[,.I[which.max(mapping_score)],by=list(nct_id,common_omop_id)]$V1] # return the first max.
-  return(dt)
+removeConflictCriteria = function(dt, aggressive = TRUE){
+  if(aggressive){
+    # remove all conflicts.
+    dim(dt)
+    nonConflictOnes = dt[,.N,.(nct_id,common_omop_id)][N==1]
+    dim(nonConflictOnes)
+    dt1 = nonConflictOnes[dt, nomatch=0L,on = c("nct_id", "common_omop_id")]
+    dim(dt1)
+    return(dt)
+  }else{
+    dt = dt[dt[,.I[which.max(mapping_score)],by=list(nct_id,common_omop_id)]$V1] # return the first max.
+    return(dt)
+  }
 }
 
 outputKnowledgeBase = function(knowledgeBase){
