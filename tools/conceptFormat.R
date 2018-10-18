@@ -1,13 +1,13 @@
+
 library(data.table)
 library(dplyr)
 library(dbplyr)
 
-addConceptMapping = function(ie_result,cm_result,blacklist = "../resource/blacklist.csv",mapping_threshold = 0.7, levels_of_separation = 2, low_count_threshold = 5){
+addConceptMapping = function(ie_result,cm_result,blacklist = "../resource/blacklist.csv",levels_of_separation = 2, low_count_threshold = 5){
   ###
   # ie_result: post-processed ner results.
   # cm_results: concept_mapping results.
   # blacklist: a curated blacklist storing concept do not want to be used to generate questions.
-  # mapping_threshold: exclude low quality mapping results.
   # levels_of_separation: min_level_speration <  levels_of_separation. set 0 == no clustering.
   # low_count_threshold: if mapping_score > low_count_threshold, no clustering for this descendants.
   # return: knowledgeBase
@@ -23,7 +23,6 @@ addConceptMapping = function(ie_result,cm_result,blacklist = "../resource/blackl
   
   # concept clustering.
   # conceptMappingAncestor = conceptCluster(conceptMapping = conceptMapping,
-  #                                         mapping_threshold = 0.7,
   #                                         levels_of_separation = 1,
   #                                         low_count_threshold = 5,
   #                                         abstract_id = HighLevelConceptId)
@@ -31,7 +30,6 @@ addConceptMapping = function(ie_result,cm_result,blacklist = "../resource/blackl
   # do clustering iteratively. 
   # It takes reasonable time to finish.
   conceptMappingAncestor = conceptClusterIterative(conceptMapping = conceptMapping,
-                                          mapping_threshold = mapping_threshold,
                                           levels_of_separation = levels_of_separation,
                                           low_count_threshold = low_count_threshold,
                                           abstract_id = HighLevelConceptId)
@@ -39,6 +37,8 @@ addConceptMapping = function(ie_result,cm_result,blacklist = "../resource/blackl
   conceptMappingAncestorName = getConceptName(conceptIdTbl = conceptMappingAncestor)
   conceptMappingAncestorName = as.data.table(conceptMappingAncestorName)
   # join tables.
+  
+  
   setindexv(conceptMappingAncestorName, "omop_id")
   setindexv(conceptMapping, "omop_id")
   conceptMappingWithCluster = conceptMapping[conceptMappingAncestorName,on = 'omop_id',allow.cartesian = TRUE,nomatch=0] # make sure to add allow.cartesian = TRUE
@@ -46,13 +46,13 @@ addConceptMapping = function(ie_result,cm_result,blacklist = "../resource/blackl
   setindexv(conceptMappingWithCluster, c("term","domain"))
   setindexv(ie_result, c("term","domain"))
   # note: mapping_term could be different from common omop name even for the same omop_id because the mapping_term could be non-standard.
-  knowledgeBase <- ie_result[conceptMappingWithCluster,on = c('term','domain'),allow.cartesian = TRUE, nomatch=0] # make sure to add allow.cartesian = TRUE
+  knowledgeBase <- conceptMappingWithCluster[ie_result,on = c('term','domain'),allow.cartesian = TRUE, nomatch=0] # make sure to add allow.cartesian = TRUE
   return(knowledgeBase)
 }
 
 
 
-conceptCluster = function(conceptMapping,mapping_threshold = 0.7,levels_of_separation = 2,low_count_threshold = 5, abstract_id = HighLevelConceptId){
+conceptCluster = function(conceptMapping,levels_of_separation = 2,low_count_threshold = 5, abstract_id = HighLevelConceptId){
   ###
   # mapping_threshold: remove low quality mapping concepts.
   # levels_of_separation: min_level_sperate < levels_of_separation
@@ -62,7 +62,7 @@ conceptCluster = function(conceptMapping,mapping_threshold = 0.7,levels_of_separ
   # old version deprecated.
   ###
   
-  conceptMappingHighQuality = conceptMapping[mapping_score > mapping_threshold]
+  conceptMappingHighQuality = conceptMapping
   conceptMappingSum = conceptMappingHighQuality[,.(scoreSum=sum(mapping_score)),by=omop_id]
   highQualityOmopId = conceptMappingSum %>% pull(omop_id) %>% unique()
   highQualityOmopId = highQualityOmopId[!highQualityOmopId %in% abstract_id]
@@ -120,16 +120,15 @@ getConceptName = function(conceptIdTbl){
   return(conceptNameTbl)
 }
 
-conceptClusterIterative = function(conceptMapping,mapping_threshold = 0.7,levels_of_separation = 2,low_count_threshold = 5, abstract_id = HighLevelConceptId){
+conceptClusterIterative = function(conceptMapping,levels_of_separation = 2,low_count_threshold = 5, abstract_id){
   ###
-  # mapping_threshold: remove low quality mapping concepts.
   # levels_of_separation: min_level_sperate < levels_of_separation
   # low_count_threshold: if mapping score > low count threshold, no mapping. change low_count_threshold = 0 to avoid any clustering.
   # abstract_id: abstract id should be removed from question list. no clustering.
   # return: tibble(omop_id,common_omop_id)
   ###
   
-  conceptMappingHighQuality = conceptMapping[mapping_score > mapping_threshold]
+  conceptMappingHighQuality = conceptMapping
   conceptMappingSum = conceptMappingHighQuality[,.(scoreSum=sum(mapping_score)),by=omop_id]
   highQualityOmopId = conceptMappingSum %>% pull(omop_id) %>% unique()
   highQualityOmopId = highQualityOmopId[!highQualityOmopId %in% abstract_id]

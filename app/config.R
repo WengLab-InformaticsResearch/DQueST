@@ -48,5 +48,5 @@ CON = getApi(
 CACHE = getCache(CON)
 COUNTRY_NAME = unique(CACHE$COUNTRY_STATE_TABLE$country)
 TRIAL_INFO = get(load(file = "model/TRIAL_INFO.rda"))
-CRITERIA_LIB = get(load(file = "model/knowledgeBase_small.rda"))
+CRITERIA_LIB = get(load(file = "model/kb_m_0.9_ls_1_c_5_agg_TRUE_small.rda"))
 ### end ###

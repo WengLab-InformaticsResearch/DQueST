@@ -4,8 +4,8 @@ observeEvent(input$continue, {
       length(react$trialSet_tmp) == 0) {
     showNotification("All trials have been filtered out or all trial criteria has been asked")
   } else{
-    # confirm update
-    react$wMatrix = react$wMatrix_tmp
+    # confirm update and remove common concept
+    react$wMatrix = removeConceptId(react$wMatrix_tmp,react$common_concept_id)
     react$trialSet = react$trialSet_tmp
     # optimizing.
     react$common_concept_id = findConcept(wMatrix = react$wMatrix,

@@ -1,10 +1,11 @@
 rm(list=ls())
-setwd("~/Projects/DQueST//tools/")
+setwd("~/Projects/DQueST/tools/")
 library(data.table)
 library(dplyr)
 source("ieFormat.R")
 source("conceptFormat.R")
 source("knowledgeFormat.R")
+source("filterLowQuality.R")
 
 
 # step 0: parse value and temporal using python PyCode/ie_parser.py
@@ -22,8 +23,10 @@ dim(ie_result) # 4482721
 
 # step 2: add omop concept.
 cm_result = fread("../resource/concept_mapping_results.txt",sep = "\t",header = F,stringsAsFactors = F,fill = T,showProgress = T,quote = "")
-dim(cm_result) # 616870
-ie_and_cm = addConceptMapping(ie_result = ie_result,cm_result = cm_result)
+dim(cm_result)
+cm_result = filterLowQuality(cm_result = cm_result, mapping_threshold = 0.9)
+dim(cm_result)
+ie_and_cm = addConceptMapping(ie_result = ie_result,cm_result = cm_result,levels_of_separation = 1,low_count_threshold = 20)
 dim(ie_and_cm) # 3673845
 
 # step 3: postprocess knowledgebase

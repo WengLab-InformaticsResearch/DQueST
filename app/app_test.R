@@ -126,3 +126,8 @@ server <- function(input, output, session) {
 shinyApp(ui = ui, server = server, onStop(function() {
   lapply(dbListConnections(drv = dbDriver("PostgreSQL")), function(x) {dbDisconnect(conn = x)})
 }))
+
+# execute the following if 
+# Error in postgresqlNewConnection(drv, ...) : 
+# RS-DBI driver: (cannot allocate a new connection -- maximum of 16 connections already opened)
+# lapply(dbListConnections(drv = dbDriver("PostgreSQL")), function(x) {dbDisconnect(conn = x)})

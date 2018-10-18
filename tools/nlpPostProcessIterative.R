@@ -5,10 +5,14 @@ library(dplyr)
 source("ieFormat.R")
 source("conceptFormat.R")
 source("knowledgeFormat.R")
+source("filterLowQuality.R")
 
 
-generateKnowledgeBase = function(cm_result, ie_result, mapping_threshold = 0.7, levels_of_separation = 2, low_count_threshold = 5, aggressive = TRUE){
-  ie_and_cm = addConceptMapping(ie_result = ie_result,cm_result = cm_result,mapping_threshold = mapping_threshold,levels_of_separation = levels_of_separation,low_count_threshold = low_count_threshold)
+generateKnowledgeBase = function(cm_result, ie_result, mapping_threshold = 0.9, levels_of_separation = 2, low_count_threshold = 5, aggressive = TRUE){
+  dim(cm_result)
+  cm_result = filterLowQuality(cm_result = cm_result, mapping_threshold = mapping_threshold)
+  dim(cm_result)
+  ie_and_cm = addConceptMapping(ie_result = ie_result,cm_result = cm_result,levels_of_separation = levels_of_separation,low_count_threshold = low_count_threshold)
   knowledge_base = removeNonValueMeasurement(ie_and_cm)
   knowledge_base = removeConflictCriteria(knowledge_base,aggressive = aggressive)
   file_name = paste0('kb','_m_',mapping_threshold,'_ls_',levels_of_separation,'_c_',low_count_threshold,'_agg_',aggressive)
@@ -37,10 +41,11 @@ dim(ie_result) # 4482721
 # step 4: output knowledgebase.
 cm_result = fread("../resource/concept_mapping_results.txt",sep = "\t",header = F,stringsAsFactors = F,fill = T,showProgress = T,quote = "")
 
-mapping_threshold = c(0.7,0.9)
-levels_of_separation = c(1,2)
-low_count_threshold = c(5,20)
-aggressive = c(TRUE,FALSE)
+
+mapping_threshold = c(0.9)
+levels_of_separation = c(1)
+low_count_threshold = c(5)
+aggressive = c(TRUE)
 
 for(m in mapping_threshold){
   for(l in levels_of_separation){

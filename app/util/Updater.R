@@ -19,7 +19,12 @@ updateWMatrix = function(wMatrix,
     
     # remove unqualified trials.
     wMatrix_new = wMatrix_new %>% filter(!nct_id %in% trialsRemoved)
-    wMatrix_new = wMatrix_new %>% filter(common_omop_id != common_concept_id) %>% as.data.table()
+
+    # a bug. if the trial has only this common_omop_id it will be listed in the removed list.
+    # since nothing left in wMatrix for this trial. However, it should be included.
+    # wMatrix_new = wMatrix_new %>% filter(common_omop_id != common_concept_id) %>% as.data.table()
+    # print('NCT03235427' %in% (wMatrix_new %>% pull(nct_id)))
+    
     # print(paste0("--trials Updated:",wMatrix_new %>% pull(nct_id) %>% unique() %>% length()))
   }
   # remove the criteria from the working matrix.
@@ -35,6 +40,18 @@ updateWMatrix = function(wMatrix,
   #     e,
   #   finally = print("update wMatrix")
   # )
+  return(wMatrix_new)
+}
+
+removeConceptId = function(wMatrix,common_concept_id){
+  if(is.null(common_concept_id)){
+    # start of questionarrier
+    wMatrix_new = wMatrix
+  }else{
+    print(common_concept_id)
+    wMatrix_new = wMatrix %>% filter(common_omop_id != common_concept_id) %>% as.data.table()
+    
+  }
   return(wMatrix_new)
 }
 

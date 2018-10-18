@@ -15,9 +15,6 @@ observeEvent(input$update, {
     nct3 = react$trialSet
     react$trialSet_tmp = setdiff(nct3, setdiff(nct2, nct1))
     
-    # # render removed trial table
-    # output$trial_info_removal = renderTrialInfo(setdiff(nct2, nct1), TRIAL_INFO, session)
-    
     # render trial table
     output$trial_info = renderTrialInfo(react$trialSet_tmp, TRIAL_INFO, session)
     

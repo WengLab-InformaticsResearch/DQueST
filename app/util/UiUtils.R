@@ -91,7 +91,6 @@ insertTimeRangeInput = function(label) {
 }
 
 input2answer = function(input) {
-  print(input)
   answer = NULL
   if(input$skip){
     showNotification("You have selected skip the question.")
@@ -142,7 +141,7 @@ input2answer = function(input) {
           showNotification("start date should not be later than end date. change both to end date. ")
           answer$value = NULL
           answer$present = TRUE
-          answer$start = as.numeric(input$end_as_date - Sys.Date())
+          answer$start = as.numeric(input$start_as_date - Sys.Date())
           answer$end = as.numeric(input$end_as_date - Sys.Date())
           return(answer)
         }else{
