@@ -11,6 +11,7 @@ source("knowledgeFormat.R")
 
 # step 1: clean and format ie matrix.
 ie_result = fread("../resource/information_retrieval_results_plus.txt",sep = "\t",header = F,stringsAsFactors = F,fill = T,showProgress = T,nThread = 4,na.strings = c("no_temporal","no_value",'NA'))
+# save(ie_result,file = '../resource/ie_result_raw.rda')
 dim(ie_result) # 5107074
 ie_result = removeIncOnlyTrial(ie_result)
 dim(ie_result) # 4482721
