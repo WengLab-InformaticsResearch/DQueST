@@ -27,13 +27,13 @@ ie_and_cm = addConceptMapping(ie_result = ie_result,cm_result = cm_result)
 dim(ie_and_cm) # 3673845
 
 # step 3: postprocess knowledgebase
-knowledge_base = removeNonValueMeasurement(knowledge_base)
+knowledge_base = removeNonValueMeasurement(ie_and_cm)
 dim(knowledge_base) # 3409715
 knowledge_base = removeConflictCriteria(knowledge_base)
-dim(knowledge_base) # 3105624
+dim(knowledge_base) # 2864820
 
 # step 4: output knowledgebase.
-outputKnowledgeBase(knowledge_base)
+outputKnowledgeBase(knowledge_base,file_name = 'kb_2864820')
 
 
 

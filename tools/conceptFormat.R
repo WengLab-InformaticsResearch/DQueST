@@ -2,12 +2,15 @@ library(data.table)
 library(dplyr)
 library(dbplyr)
 
-addConceptMapping = function(ie_result,cm_result,blacklist = "../resource/blacklist.csv"){
+addConceptMapping = function(ie_result,cm_result,blacklist = "../resource/blacklist.csv",mapping_threshold = 0.7, levels_of_separation = 2, low_count_threshold = 5){
   ###
   # ie_result: post-processed ner results.
   # cm_results: concept_mapping results.
   # blacklist: a curated blacklist storing concept do not want to be used to generate questions.
-  # return: 
+  # mapping_threshold: exclude low quality mapping results.
+  # levels_of_separation: min_level_speration <  levels_of_separation. set 0 == no clustering.
+  # low_count_threshold: if mapping_score > low_count_threshold, no clustering for this descendants.
+  # return: knowledgeBase
   ###
   
   # import concept mapping table.
@@ -28,9 +31,9 @@ addConceptMapping = function(ie_result,cm_result,blacklist = "../resource/blackl
   # do clustering iteratively. 
   # It takes reasonable time to finish.
   conceptMappingAncestor = conceptClusterIterative(conceptMapping = conceptMapping,
-                                          mapping_threshold = 0.7,
-                                          levels_of_separation = 1,
-                                          low_count_threshold = 5,
+                                          mapping_threshold = mapping_threshold,
+                                          levels_of_separation = levels_of_separation,
+                                          low_count_threshold = low_count_threshold,
                                           abstract_id = HighLevelConceptId)
   conceptMappingAncestor = as.data.table(conceptMappingAncestor)
   conceptMappingAncestorName = getConceptName(conceptIdTbl = conceptMappingAncestor)
