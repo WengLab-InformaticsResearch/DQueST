@@ -18,6 +18,12 @@ packrat::unbundle(bundle="testproject-2014-07-15.tar.gz", where="/home/bob/proje
 
 ## Deployment
 Deploy it on R shinny server
+1. create an AWS ubuntu 16.04 instance https://www.charlesbordet.com/en/shiny-aws-2/
+2. config R shiny server on AWS VM https://tm3.ghost.io/2017/12/31/deploying-an-r-shiny-app-to-aws/. It is important to notice the default security setting in AWS should be changed to open port 3838 or change nginx setting to redict 80 request to 127.0.0.1:3838 and change shiny-server setting as well
+3. copy `app/` to `/srv/shiny-server/sample-apps/` by `scp -v -i "aws-key.pem" -r /your/path/to/app ubuntu@aws-dns:`
+4. Install required package as `sudo R`. It is important to notice that `curl` should be installed for `devtools`, which requires package installed in ubuntu. https://stackoverflow.com/questions/20671814/non-zero-exit-status-r-3-0-1-xml-and-rcurl. 
+`postgresql` should be installed in ubuntu. https://stackoverflow.com/questions/22202141/installing-rpostgresql-on-linux
+5. start shiny server by `sudo service shiny-server start`
 
 ## Next step
 1. wrap off-line module in a better pipeline
