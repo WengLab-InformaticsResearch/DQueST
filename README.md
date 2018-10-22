@@ -24,6 +24,7 @@ Deploy it on R shinny server
 4. Install required package as `sudo R`. It is important to notice that `curl` should be installed for `devtools`, which requires package installed in ubuntu. https://stackoverflow.com/questions/20671814/non-zero-exit-status-r-3-0-1-xml-and-rcurl. 
 `postgresql` should be installed in ubuntu. https://stackoverflow.com/questions/22202141/installing-rpostgresql-on-linux
 5. start shiny server by `sudo service shiny-server start`
+6. view logs at `/var/log/shiny-server`
 
 ## Next step
 1. wrap off-line module in a better pipeline
