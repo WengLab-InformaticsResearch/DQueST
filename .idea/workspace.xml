@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f7c000d5-2659-4ad9-9a14-33c1372a9ca6" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/tools/PyCode/ie_parser.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/conceptFormat.R" beforeDir="false" afterPath="$PROJECT_DIR$/tools/conceptFormat.R" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/nlpPostProcess.R" beforeDir="false" afterPath="$PROJECT_DIR$/tools/nlpPostProcess.R" afterDir="false" />
-    </list>
+    <list default="true" id="f7c000d5-2659-4ad9-9a14-33c1372a9ca6" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -31,8 +26,8 @@
       <file leaf-file-name="nlpPostProcess.R" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tools/nlpPostProcess.R">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="22" column="54" selection-start-line="22" selection-start-column="54" selection-end-line="22" selection-end-column="54" />
+            <state relative-caret-position="360">
+              <caret line="24" column="54" selection-start-line="24" selection-start-column="54" selection-end-line="24" selection-end-column="54" />
             </state>
           </provider>
         </entry>
@@ -162,7 +157,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="2560" height="1337" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.13784955" />
       <window_info anchor="bottom" id="TODO" order="10" />
@@ -207,8 +201,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tools/nlpPostProcess.R">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="22" column="54" selection-start-line="22" selection-start-column="54" selection-end-line="22" selection-end-column="54" />
+        <state relative-caret-position="360">
+          <caret line="24" column="54" selection-start-line="24" selection-start-column="54" selection-end-line="24" selection-end-column="54" />
         </state>
       </provider>
     </entry>

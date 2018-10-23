@@ -6,8 +6,6 @@ source(file = './config.R')
 IE_RESULT = get(load(file = "./model/ie_result_raw.rda"))
 ### end ###
 
-fieldsMandatory <- c("name")
-
 ### define UI ###
 ui <- navbarPage(
   title = "DQeST",
