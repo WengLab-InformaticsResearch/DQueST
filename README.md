@@ -25,6 +25,7 @@ Deploy it on R shinny server
 `postgresql` should be installed in ubuntu. https://stackoverflow.com/questions/22202141/installing-rpostgresql-on-linux. Install `digest` package in R 
 5. start shiny server by `sudo service shiny-server start`
 6. view logs at `/var/log/shiny-server`
+7. make sure ../resource/ACT_login is loaded
 
 ## Next step
 1. wrap off-line module in a better pipeline
