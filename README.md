@@ -36,3 +36,6 @@ v_0.0.1
 
 ## Authors
 Cong Liu, Chi Yuan, and Chunhua Weng
+
+## video
+[linkname](https://www.youtube.com/watch?v=qYt1hhcR-Bw&)
