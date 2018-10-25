@@ -38,4 +38,4 @@ v_0.0.1
 Cong Liu, Chi Yuan, and Chunhua Weng
 
 ## video
-[tutorial](https://www.youtube.com/watch?v=qYt1hhcR-Bw&)
+[tutorial](https://www.youtube.com/watch?v=YDVYECJmkJA&)
