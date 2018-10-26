@@ -10,7 +10,7 @@ packrat::unbundle(bundle="testproject-2014-07-15.tar.gz", where="/home/bob/proje
 -- The model files are too big (>20mb) to upload to github
 3. resource/AACT_LOGIN contains connection information to AACT (https://www.ctti-clinicaltrials.org/aact-database) database
 -- registration required
-4. > 2GB memory required
+4. \> 2GB memory required
 
 ## Usage 
 1. Download XML files from clinicaltrials.gov (https://clinicaltrials.gov/ct2/resources/download#DownloadAllData)
@@ -36,3 +36,6 @@ v_0.0.1
 
 ## Authors
 Cong Liu, Chi Yuan, and Chunhua Weng
+
+## video
+[tutorial](https://www.youtube.com/watch?v=YDVYECJmkJA&)
