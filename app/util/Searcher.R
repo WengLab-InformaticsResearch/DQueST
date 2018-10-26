@@ -18,6 +18,8 @@ getTrialsBySearch = function(con,
   # condition = c('breast cancer', 'liver cancer')
   if (!is.null(condition)) {
     condition = tolower(condition)
+    # fix bug for Alzheimer's Disease
+    condition = gsub("'", "''", condition)
     condition = paste0("'", condition, "'")
     condition = paste0(condition, collapse = ",")
     condition = paste0("(", condition, ")")

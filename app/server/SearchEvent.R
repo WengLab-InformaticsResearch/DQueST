@@ -6,7 +6,7 @@ observeEvent(input$search, {
                           } else{
                             # get nct_id.
                             react$trialSet_tmp = getTrialsBySearch(
-                              con = CON,
+                              con = react$MY_CON,
                               condition = input$condition,
                               age = input$age,
                               gender = input$gender,

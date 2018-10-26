@@ -45,6 +45,14 @@ ui <- navbarPage(
 
 # Define server logic
 server <- function(input, output, session) {
+  # refresh session and disconnect db.
+  session$onEnded(
+    {function() {
+      observe(dbDisconnect(conn = react$MY_CON))
+      gc()
+    }}
+  )
+  
   
   ### init global var ###
   react <- reactiveValues(
@@ -55,7 +63,14 @@ server <- function(input, output, session) {
     # candidate pool
     trialSet_tmp = NULL,
     common_concept_id = NULL,
-    asked_concept_id = NULL
+    asked_concept_id = NULL,
+    MY_CON = getApi(
+      dbname = dbname,
+      host = host,
+      port = port,
+      user = user,
+      password = password
+    )
   )
   ### end ###
   
